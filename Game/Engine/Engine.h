@@ -5,19 +5,23 @@
 #include "RootSignature.h"
 #include "Mesh.h"
 #include "Shader.h"
+#include "ConstantBuffer.h"
+#include "TableDescriptorHeap.h"
 
 class Engine
 {
 public:
-	
+
 	void Init(const WindowInfo& info);
 	void Render();
 
 public:
-	shared_ptr<Device>			GetDevice()			{ return _device; }
-	shared_ptr<CommandQueue>	GetCmdQueue()		{ return _cmdQueue; }
-	shared_ptr<SwapChain>		GetSwapChain()		{ return _swapChain; }
-	shared_ptr<RootSignature>	GetRootSignature()	{ return _rootSignature; }
+	shared_ptr<Device>			GetDevice() { return _device; }
+	shared_ptr<CommandQueue>	GetCmdQueue() { return _cmdQueue; }
+	shared_ptr<SwapChain>		GetSwapChain() { return _swapChain; }
+	shared_ptr<RootSignature>	GetRootSignature() { return _rootSignature; }
+	shared_ptr<ConstantBuffer>	GetCB() { return _cb; }
+	shared_ptr<TableDescriptorHeap>	GetTableDescHeap() { return _tableDescHeap; }
 
 
 public:
@@ -37,6 +41,7 @@ private:
 	shared_ptr<CommandQueue>	_cmdQueue = make_shared<CommandQueue>();
 	shared_ptr<SwapChain>		_swapChain = make_shared<SwapChain>();
 	shared_ptr<RootSignature>	_rootSignature = make_shared<RootSignature>();
-
+	shared_ptr<ConstantBuffer>	_cb = make_shared<ConstantBuffer>();
+	shared_ptr<TableDescriptorHeap>	_tableDescHeap = make_shared<TableDescriptorHeap>();
 };
 
