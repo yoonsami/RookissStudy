@@ -13,6 +13,27 @@
     <Filter Include="Shader">
       <UniqueIdentifier>{00acea95-f2b8-4421-820d-e15eddb0cdc3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Device">
+      <UniqueIdentifier>{08345cb6-9437-4739-9f20-9b0ee54e89b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Device\SwapChain">
+      <UniqueIdentifier>{0d9ea763-4300-4d2c-9771-d68eba2a734b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Device\ConstantBuffer">
+      <UniqueIdentifier>{12eeff99-31b5-424a-b6cf-d15ab642ab19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Device\CommandQueue">
+      <UniqueIdentifier>{7c8fad9e-352f-4e88-9f57-c59b6c5f4d50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Device\RootSignature">
+      <UniqueIdentifier>{317e52e1-ccf0-4f5a-afe0-354f1d8dcfa2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Device\TableDescriptorHeap">
+      <UniqueIdentifier>{9a0ff489-66f4-4b94-af74-0bd0f217b809}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Device\DepthStencilBuffer">
+      <UniqueIdentifier>{04b528c2-3e48-408f-86d1-494e6083b389}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -24,29 +45,35 @@
     <ClCompile Include="Engine.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="CommandQueue.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Device.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="SwapChain.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="RootSignature.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
     <ClCompile Include="Mesh.cpp">
       <Filter>Resource</Filter>
     </ClCompile>
     <ClCompile Include="Shader.cpp">
       <Filter>Resource</Filter>
     </ClCompile>
+    <ClCompile Include="SwapChain.cpp">
+      <Filter>Engine\Device\SwapChain</Filter>
+    </ClCompile>
+    <ClCompile Include="CommandQueue.cpp">
+      <Filter>Engine\Device\CommandQueue</Filter>
+    </ClCompile>
     <ClCompile Include="ConstantBuffer.cpp">
-      <Filter>Engine</Filter>
+      <Filter>Engine\Device\ConstantBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Device.cpp">
+      <Filter>Engine\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="RootSignature.cpp">
+      <Filter>Engine\Device\RootSignature</Filter>
     </ClCompile>
     <ClCompile Include="TableDescriptorHeap.cpp">
-      <Filter>Engine</Filter>
+      <Filter>Engine\Device\TableDescriptorHeap</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="DepthStencilBuffer.cpp">
+      <Filter>Engine\Device\DepthStencilBuffer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -62,29 +89,35 @@
     <ClInclude Include="Engine.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="CommandQueue.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Device.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="SwapChain.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="RootSignature.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
     <ClInclude Include="Mesh.h">
       <Filter>Resource</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
       <Filter>Resource</Filter>
     </ClInclude>
+    <ClInclude Include="SwapChain.h">
+      <Filter>Engine\Device\SwapChain</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandQueue.h">
+      <Filter>Engine\Device\CommandQueue</Filter>
+    </ClInclude>
     <ClInclude Include="ConstantBuffer.h">
-      <Filter>Engine</Filter>
+      <Filter>Engine\Device\ConstantBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Device.h">
+      <Filter>Engine\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="RootSignature.h">
+      <Filter>Engine\Device\RootSignature</Filter>
     </ClInclude>
     <ClInclude Include="TableDescriptorHeap.h">
-      <Filter>Engine</Filter>
+      <Filter>Engine\Device\TableDescriptorHeap</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthStencilBuffer.h">
+      <Filter>Engine\Device\DepthStencilBuffer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

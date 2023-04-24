@@ -4,6 +4,7 @@
 
 shared_ptr<Mesh> mesh = make_shared<Mesh>();
 shared_ptr<Shader> shader = make_shared<Shader>();
+shared_ptr<Texture> texture = make_shared<Texture>();
 
 void Game::Init(const WindowInfo& info)
 {
@@ -13,12 +14,16 @@ void Game::Init(const WindowInfo& info)
 
 	vertex[0].pos = Vec3(-0.5f, 0.5f, 0.5f);
 	vertex[0].color = Vec4(1.f, 0.f, 0.f, 1.f);
+	vertex[0].uv = Vec2(0.f, 0.f);
 	vertex[1].pos = Vec3(0.5f, 0.5f, 0.5f);
 	vertex[1].color = Vec4(0.f, 1.0f, 0.f, 1.f);
+	vertex[1].uv = Vec2(1.f, 0.f);
 	vertex[2].pos = Vec3(0.5f, -0.5f, 0.5f);
 	vertex[2].color = Vec4(0.f, 0.f, 1.f, 1.f);
+	vertex[2].uv = Vec2(1.f, 1.f);
 	vertex[3].pos = Vec3(-0.5f, -0.5f, 0.5f);
 	vertex[3].color = Vec4(0.f, 1.f, 0.f, 1.f);
+	vertex[3].uv = Vec2(0.f, 1.f);
 
 	vector<uint32> index;
 	{
@@ -33,6 +38,8 @@ void Game::Init(const WindowInfo& info)
 
 	shader->Init(L"..\\Resources\\Shader\\default.hlsli");
 
+	texture->Init(L"..\\Resources\\Texture\\0.png");
+
 	GEngine->GetCmdQueue()->WaitSync();
 }
 
@@ -44,11 +51,20 @@ void Game::Update()
 
 	{
 		Transform t;
-		t.offset = Vec4{ 0.f,0.f,0.f,0.f };
+		t.offset = Vec4{ 0.25f,0.25f,0.2f,0.f };
 		mesh->SetTransform(t);
+
+		mesh->SetTexture(texture);
 		mesh->Render();
 	}
+	{
+		Transform t;
+		t.offset = Vec4{ 0.f,0.f,0.f,0.f };
+		mesh->SetTransform(t);
 
+		mesh->SetTexture(texture);
+		mesh->Render();
+	}
 
 	GEngine->RenderEnd();
 }
