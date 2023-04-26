@@ -1,5 +1,10 @@
 #include "pch.h"
 #include "Engine.h"
+#include "Material.h"
+#include "Transform.h"
+#include "Input.h"
+#include "Timer.h"
+#include "SceneManager.h"
 
 
 void Engine::Init(const WindowInfo& info)
@@ -15,17 +20,40 @@ void Engine::Init(const WindowInfo& info)
 	_cmdQueue->Init(_device->GetDevice(), _swapChain);
 	_swapChain->Init(info, _device->GetDevice(), _device->GetDXGI(), _cmdQueue->GetCmdQueue());
 	_rootSignature->Init();
-	_cb->Init(sizeof(Transform), 256);
 	_tableDescHeap->Init(256);
 	_depthStencilBuffer->Init(_window);
+
+	CreateConstantBuffer(CBV_REGISTER::b0, sizeof(TransformParams), 256);
+	CreateConstantBuffer(CBV_REGISTER::b1, sizeof(MaterialParams), 256);
+
 	ResizeWindow(info.width, info.height);
+
+	Input::GetInstance()->Init(info.hwnd);
+	Timer::GetInstance()->Init();
+}
+
+void Engine::Update()
+{
+	Input::GetInstance()->Update();
+	Timer::GetInstance()->Update();
+	SceneManager::GetInstance()->Update();
+
+	Render();
+
+
+	ShowFPS();
+}
+
+void Engine::LateUpdate()
+{
+
 }
 
 void Engine::Render()
 {
 	RenderBegin();
 
-	//TODO :: 나머지 물체를 그려준다
+	SceneManager::GetInstance()->Render();
 
 	RenderEnd();
 }
@@ -54,4 +82,22 @@ void Engine::ResizeWindow(int32 width, int32 height)
 	::SetWindowPos(_window.hwnd, 0, 100, 100, _window.width, _window.height, 0);
 	
 	_depthStencilBuffer->Init(_window);
+}
+
+void Engine::ShowFPS()
+{
+	uint32 fps = Timer::GetInstance()->GetFPS();
+	WCHAR szBuffer[255] = {};
+	swprintf_s(szBuffer, L"FPS : %d, DT : %f", fps, fDT);
+	SetWindowText(_window.hwnd, szBuffer);
+}
+
+void Engine::CreateConstantBuffer(CBV_REGISTER reg, uint32 bufferSize, uint32 count)
+{
+	uint8 typeInt = static_cast<uint8>(reg);
+	assert(_constantBuffers.size() == typeInt);
+
+	shared_ptr<ConstantBuffer> buffer = make_shared<ConstantBuffer>();
+	buffer->Init(reg, bufferSize, count);
+	_constantBuffers.push_back(buffer);
 }

@@ -11,12 +11,14 @@
 #include <array>
 #include <list>
 #include <map>
+#include <mutex>
 using namespace std;
 
 #include <filesystem>
 namespace fs = std::filesystem;
 
 #include "d3dx12.h"
+#include "SimpleMath.h"
 #include <d3d12.h>
 #include <wrl.h>
 #include <d3dcompiler.h>
@@ -24,6 +26,7 @@ namespace fs = std::filesystem;
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 #include <DirectXColors.h>
+#include "../Header/Functor.h"
 using namespace DirectX;
 using namespace DirectX::PackedVector;
 using namespace Microsoft::WRL;
@@ -52,10 +55,10 @@ using uint8		= unsigned __int8;
 using uint16	= unsigned __int16;
 using uint32	= unsigned __int32;
 using uint64	= unsigned __int64;
-using Vec2		= XMFLOAT2;
-using Vec3		= XMFLOAT3;
-using Vec4		= XMFLOAT4;
-using Matrix	= XMMATRIX;
+using Vec2		= DirectX::SimpleMath::Vector2;
+using Vec3		= DirectX::SimpleMath::Vector3;
+using Vec4		= DirectX::SimpleMath::Vector4;
+using Matrix	= DirectX::SimpleMath::Matrix;
 
 enum class CBV_REGISTER :uint8
 {
@@ -83,8 +86,8 @@ enum
 {
 	SWAP_CHAIN_BUFFER_COUNT = 2,
 	CBV_REGISTER_COUNT = CBV_REGISTER::END,
-	SRV_REGISTER_COUNT = static_cast<uint8>(SRV_REGISTER::END) -CBV_REGISTER_COUNT,
-	REGISTER_COUNT = SRV_REGISTER_COUNT+ CBV_REGISTER_COUNT,
+	SRV_REGISTER_COUNT = static_cast<uint8>(SRV_REGISTER::END) - static_cast<uint8>(CBV_REGISTER_COUNT),
+	REGISTER_COUNT = SRV_REGISTER_COUNT + CBV_REGISTER_COUNT,
 };
 struct WindowInfo
 {
@@ -101,13 +104,23 @@ struct Vertex
 	Vec2 uv;
 };
 
-struct Transform
+
+
+#define DEVICE				GEngine->GetDevice()->GetDevice()
+#define CMD_LIST			GEngine->GetCmdQueue()->GetCmdList()
+#define ROOT_SIGNATURE		GEngine->GetRootSignature()->GetSignature()
+#define RESOURCE_CMD_LIST	GEngine->GetCmdQueue()->GetResourceCmdList()
+#define INPUT				Input::GetInstance()
+#define	fDT					Timer::GetInstance()->GetfloatDeltaTime()
+#define	dDT					Timer::GetInstance()->GetdoubleDeltaTime()
+
+#define CONST_BUFFER(type)	GEngine->GetConstantBuffer(type)
+
+
+struct TransformParams
 {
-	Vec4 offset;
+	Matrix matWVP;
 };
 
-#define DEVICE		GEngine->GetDevice()->GetDevice()
-#define CMD_LIST	GEngine->GetCmdQueue()->GetCmdList()
-#define  ROOT_SIGNATURE GEngine->GetRootSignature()->GetSignature()
-#define  RESOURCE_CMD_LIST GEngine->GetCmdQueue()->GetResourceCmdList()
+
 extern unique_ptr<class Engine> GEngine;
