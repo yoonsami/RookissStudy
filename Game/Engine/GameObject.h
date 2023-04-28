@@ -1,12 +1,14 @@
 #pragma once
 #include "Component.h"
+#include "Object.h"
 
 class Transform;
 class MeshRenderer;
 class MonoBehaviour;
 class Camera;
+class Light;
 
-class GameObject :public enable_shared_from_this<GameObject>
+class GameObject :public Object, public enable_shared_from_this<GameObject>
 {
 public:
 	GameObject();
@@ -25,6 +27,7 @@ public:
 	shared_ptr<Transform>		GetTransform();
 	shared_ptr<MeshRenderer>	GetMeshRenderer();
 	shared_ptr<Camera>			GetCamera();
+	shared_ptr<Light>			GetLight();
 
 	void AddComponent(shared_ptr<Component> component); 
 

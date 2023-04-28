@@ -1,6 +1,10 @@
 #include "pch.h"
 #include "Scene.h"
 #include "GameObject.h"
+#include "Camera.h"
+#include "Engine.h"
+#include "ConstantBuffer.h"
+#include "Light.h"
 
 void Scene::Awake()
 {
@@ -30,6 +34,39 @@ void Scene::FinalUpdate()
 {
 	for (const auto& gameObject : _gameObjects)
 		gameObject->FinalUpdate();
+}
+
+void Scene::Render()
+{
+	// 조명 세팅
+	PushLightData();
+
+	for (auto& gameobject : _gameObjects)
+	{
+		if (gameobject->GetCamera() == nullptr)
+			continue;
+
+		gameobject->GetCamera()->Render();
+	}
+}
+
+void Scene::PushLightData()
+{
+	LightParams lightParams = {};
+
+	for (auto& gameobject : _gameObjects)
+	{
+		if(!gameobject->GetLight())
+			continue;
+
+		const LightInfo& lightInfo = gameobject->GetLight()->GetLightInfo();
+
+		lightParams.light[lightParams.lightCount] = lightInfo;
+		lightParams.lightCount++;
+
+	}
+
+	CONST_BUFFER(CONSTANT_BUFFER_TYPE::GLOBAL)->SetGlobalData(&lightParams, sizeof(lightParams));
 }
 
 void Scene::AddGameObject(shared_ptr<GameObject> gameObject)

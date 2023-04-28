@@ -37,8 +37,15 @@ void Transform::PushData()
 	// W V P
 	// 
 	// TODO
-	Matrix matWVP = _matWorld * Camera::S_MatView * Camera::S_MatProjection;
-	CONST_BUFFER(CONSTANT_BUFFER_TYPE::TRANSFORM)->PushData(&matWVP,sizeof(matWVP));
+
+	TransformParams transParam = {};
+	transParam.matWorld = _matWorld;
+	transParam.matView = Camera::S_MatView;
+	transParam.matProjection = Camera::S_MatProjection;
+	transParam.matWV = _matWorld * Camera::S_MatView;
+	transParam.matWVP = _matWorld * Camera::S_MatView * Camera::S_MatProjection;
+
+	CONST_BUFFER(CONSTANT_BUFFER_TYPE::TRANSFORM)->PushData(&transParam,sizeof(transParam));
 
 }
 

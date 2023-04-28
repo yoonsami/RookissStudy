@@ -3,6 +3,14 @@
 #include "Engine.h"
 #include "Material.h"
 
+Mesh::Mesh() : Object(OBJECT_TYPE::MESH)
+{
+}
+
+Mesh::~Mesh()
+{
+}
+
 void Mesh::Init(vector<Vertex>& vertexBuffer, vector<uint32>& indexBuffer)
 {
 	CreateVertextBuffer(vertexBuffer);
