@@ -14,6 +14,8 @@ enum class KEY_TYPE
 	D = 'D',
 	Q = 'Q',
 	E = 'E',
+	Z = 'Z',
+	C = 'C',
 	N1 = '1',
 	N2 = '2',
 	N3 = '3',
