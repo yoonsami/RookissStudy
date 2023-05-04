@@ -12,6 +12,8 @@ private:
 	~Resources();
 
 public:
+	void Init();
+
 	template <typename T>
 	shared_ptr<T> Load(const wstring& key, const wstring& path);
 
@@ -26,6 +28,10 @@ public:
 
 	shared_ptr<Mesh> LoadCubeMesh();
 	shared_ptr<Mesh> LoadSphereMesh();
+	shared_ptr<Mesh> LoadRectangleMesh();
+
+private:
+	void CreateDefaultShader();
 
 private:
 	using KeyObjMap = map<wstring, shared_ptr<Object>>;

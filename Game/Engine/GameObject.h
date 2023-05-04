@@ -34,11 +34,14 @@ public:
 	void SetCheckFrustum(bool checkFrustum) { _checkFrustum = checkFrustum; }
 	bool GetCheckFrustum() { return _checkFrustum; }
 
+	void SetLayerIndex(uint8 index) { _layerIndex = index; }
+	uint8 GetLayerIndex() { return _layerIndex; }
+
 private:
 	array<shared_ptr<Component>, FIXED_COMPONENT_COUNT> _components;
 	vector<shared_ptr<MonoBehaviour>> _scripts;
 
 	bool _checkFrustum = true;
-
+	UINT _layerIndex = 0;
 };
 
