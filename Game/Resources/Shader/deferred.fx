@@ -65,7 +65,7 @@ PS_OUT PS_Main(VS_OUT input)
     output.normal = float4(viewNormal.xyz, 0.f);
     output.color = color;
 
-     return output;
+    return output;
 }
 
 #endif
