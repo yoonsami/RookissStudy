@@ -45,7 +45,7 @@ void Transform::PushData()
 	transParam.matWV = _matWorld * Camera::S_MatView;
 	transParam.matWVP = _matWorld * Camera::S_MatView * Camera::S_MatProjection;
 
-	CONST_BUFFER(CONSTANT_BUFFER_TYPE::TRANSFORM)->PushData(&transParam,sizeof(transParam));
+	CONST_BUFFER(CONSTANT_BUFFER_TYPE::TRANSFORM)->PushGraphicsData(&transParam,sizeof(transParam));
 
 }
 

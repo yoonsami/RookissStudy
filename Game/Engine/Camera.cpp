@@ -6,6 +6,10 @@
 #include "GameObject.h"
 #include "MeshRenderer.h"
 #include "Engine.h"
+#include "Material.h"
+#include "Shader.h"
+#include "ParticleSystem.h"
+#include "InstancingManager.h"
 
 Matrix Camera::S_MatView;
 
@@ -36,32 +40,68 @@ void Camera::FinalUpdate()
 	_frustum.FinalUpdate();
 }
 
-void Camera::Render()
+void Camera::SortGameObject()
 {
-	S_MatView = _matView;
-	S_MatProjection = _matProjection;
 	shared_ptr<Scene> scene = SceneManager::GetInstance()->GetActiveScene();
-
 	const vector<shared_ptr<GameObject>>& gameObjects = scene->GetGameObjects();
 
-	for (auto& gameobject : gameObjects)
+	_vecForward.clear();
+	_vecDeferred.clear();
+	_vecParticle.clear();
+
+	for (auto& gameObject : gameObjects)
 	{
-		if(gameobject->GetMeshRenderer() == nullptr)
-			continue;
-		
-		if(IsCulled(gameobject->GetLayerIndex()))
+		if (gameObject->GetMeshRenderer() == nullptr && gameObject->GetParticleSystem() == nullptr)
 			continue;
 
-		if (gameobject->GetCheckFrustum())
+		if (IsCulled(gameObject->GetLayerIndex()))
+			continue;
+
+		if (gameObject->GetCheckFrustum())
 		{
 			if (_frustum.ContainSphere(
-				gameobject->GetTransform()->GetWorldPosition(),
-				gameobject->GetTransform()->GetBoundingSphereRadius()) == false)
+				gameObject->GetTransform()->GetWorldPosition(),
+				gameObject->GetTransform()->GetBoundingSphereRadius()) == false)
 			{
 				continue;
 			}
 		}
-		gameobject->GetMeshRenderer()->Render();
-	}
 
+		if (gameObject->GetMeshRenderer())
+		{
+			SHADER_TYPE shaderType = gameObject->GetMeshRenderer()->GetMaterial()->GetShader()->GetShaderType();
+			switch (shaderType)
+			{
+			case SHADER_TYPE::DEFERRED:
+				_vecDeferred.push_back(gameObject);
+				break;
+			case SHADER_TYPE::FORWARD:
+				_vecForward.push_back(gameObject);
+				break;
+			}
+		}
+		else
+			_vecParticle.push_back(gameObject);
+	}
+}
+
+void Camera::Render_Deferred()
+{
+	S_MatView = _matView;
+	S_MatProjection = _matProjection;
+
+	GET_SINGLE(InstancingManager)->Render(_vecDeferred);
+}
+
+void Camera::Render_Forward()
+{
+	S_MatView = _matView;
+	S_MatProjection = _matProjection;
+
+	GET_SINGLE(InstancingManager)->Render(_vecForward);
+
+	for (auto& gameObject : _vecParticle)
+	{
+		gameObject->GetParticleSystem()->Render();
+	}
 }

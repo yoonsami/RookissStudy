@@ -28,9 +28,6 @@
     <Filter Include="Engine\Device\TableDescriptorHeap">
       <UniqueIdentifier>{9a0ff489-66f4-4b94-af74-0bd0f217b809}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Device\DepthStencilBuffer">
-      <UniqueIdentifier>{04b528c2-3e48-408f-86d1-494e6083b389}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Manager">
       <UniqueIdentifier>{1cdef6d5-e4c2-48b2-89b7-7e6d9377b534}</UniqueIdentifier>
     </Filter>
@@ -76,8 +73,20 @@
     <Filter Include="Object\Resource">
       <UniqueIdentifier>{64c988ff-f5ed-4a75-88e1-5a24b5642327}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\RenderTargetGroup">
+    <Filter Include="Engine\Device\StructuredBuffer">
+      <UniqueIdentifier>{5a216aa5-a4b6-4567-8cee-12bb62a203d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Device\RenderTargetGroup">
       <UniqueIdentifier>{d3e40394-a7bc-4c9c-bfaf-04f226c66e1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Component\ParticleSystem">
+      <UniqueIdentifier>{7ba8925f-508d-4845-a27a-d52b5bcc5b8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Device\InstancingBuffer">
+      <UniqueIdentifier>{b95b8b6e-77be-4799-8886-e11e34f41854}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\InstancingManager">
+      <UniqueIdentifier>{3d49a88b-d3a6-4c79-95d4-ab6c548a088e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -116,9 +125,6 @@
     </ClCompile>
     <ClCompile Include="Texture.cpp">
       <Filter>Object\Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="DepthStencilBuffer.cpp">
-      <Filter>Engine\Device\DepthStencilBuffer</Filter>
     </ClCompile>
     <ClCompile Include="Timer.cpp">
       <Filter>Manager\Timer</Filter>
@@ -172,7 +178,19 @@
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="RenderTargetGroup.cpp">
-      <Filter>Engine\RenderTargetGroup</Filter>
+      <Filter>Engine\Device\RenderTargetGroup</Filter>
+    </ClCompile>
+    <ClCompile Include="StructuredBuffer.cpp">
+      <Filter>Engine\Device\StructuredBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="InstancingBuffer.cpp">
+      <Filter>Engine\Device\InstancingBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="InstancingManager.cpp">
+      <Filter>Manager\InstancingManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -214,9 +232,6 @@
     </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>Object\Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="DepthStencilBuffer.h">
-      <Filter>Engine\Device\DepthStencilBuffer</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
       <Filter>Manager\Timer</Filter>
@@ -270,7 +285,19 @@
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="RenderTargetGroup.h">
-      <Filter>Engine\RenderTargetGroup</Filter>
+      <Filter>Engine\Device\RenderTargetGroup</Filter>
+    </ClInclude>
+    <ClInclude Include="StructuredBuffer.h">
+      <Filter>Engine\Device\StructuredBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="InstancingBuffer.h">
+      <Filter>Engine\Device\InstancingBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="InstancingManager.h">
+      <Filter>Manager\InstancingManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -292,6 +319,15 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\deferred.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\lighting.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\compute.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\particle.fx">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

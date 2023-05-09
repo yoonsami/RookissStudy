@@ -10,6 +10,7 @@
 #include "Transform.h"
 #include "TestCameraScript.h"
 #include "Resources.h"
+#include "ParticleSystem.h"
 
 void SceneManager::Update()
 {
@@ -72,6 +73,26 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 #pragma endregion LayerMask
 	shared_ptr<Scene> scene = make_shared<Scene>();
 
+#pragma region ComputeShader
+	{
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"ComputeShader");
+
+		// UAV 용 Texture 생성
+		shared_ptr<Texture> texture = GET_SINGLE(Resources)->CreateTexture(L"UAVTexture",
+			DXGI_FORMAT_R8G8B8A8_UNORM, 1024, 1024,
+			CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE,
+			D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
+
+		shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"ComputeShader");
+		material->SetShader(shader);
+		material->SetInt(0, 1);
+		GEngine->GetComputeDescHeap()->SetUAV(texture->GetUAVHandle(), UAV_REGISTER::u0);
+
+		// 쓰레드 그룹 (1 * 1024 * 1)
+		material->Dispatch(1, 1024, 1);
+	}
+#pragma endregion
+
 #pragma  region Camera
 	{
 		shared_ptr<GameObject> camera = make_shared<GameObject>();
@@ -121,101 +142,91 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 	}
 #pragma endregion
 
-#pragma region Sphere
-	/*{
-		shared_ptr<GameObject> sphere = make_shared<GameObject>();
-		sphere->AddComponent(make_shared<Transform>());
-		sphere->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-		sphere->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 150.f));
+#pragma region Object
+	for(int32 i = 0; i < 50; ++i)
+	{
+		shared_ptr<GameObject> obj = make_shared<GameObject>();
+		obj->AddComponent(make_shared<Transform>());
+		obj->GetTransform()->SetLocalScale(Vec3(25.f, 25.f, 25.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(-300.f + i * 10.f, 0.f, 500.f));
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> sphereMesh = Resources::GetInstance()->LoadSphereMesh();
 			meshRenderer->SetMesh(sphereMesh);
 		}
 		{
-			shared_ptr<Shader> shader = make_shared<Shader>();
-			shared_ptr<Texture> texture = make_shared<Texture>();
-			shader->Init(L"..\\Resources\\Shader\\default.fx");
-			texture->Init(L"..\\Resources\\Texture\\veigar.jpg");
-			shared_ptr<Material> material = make_shared<Material>();
-			material->SetShader(shader);
-			material->SetTexture(0, texture);
+			shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"GameObject");
+			material->SetInt(0, 1);
 			meshRenderer->SetMaterial(material);
+			//material->SetInt(0, 0);
+			//meshRenderer->SetMaterial(material->Clone());
 		}
-		sphere->AddComponent(meshRenderer);
-		scene->AddGameObject(sphere);
-	}*/
-#pragma endregion
-
-#pragma region Cube
-	{
-		shared_ptr<GameObject> sphere = make_shared<GameObject>();
-		sphere->AddComponent(make_shared<Transform>());
-		sphere->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-		sphere->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 150.f));
-		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
-		{
-			shared_ptr<Mesh> sphereMesh = Resources::GetInstance()->LoadCubeMesh();
-			meshRenderer->SetMesh(sphereMesh);
-		}
-		{
-			shared_ptr<Shader> shader = Resources::GetInstance()->Get<Shader>(L"Forward");
-			shared_ptr<Texture> texture = Resources::GetInstance()->Load<Texture>(L"Wood", L"..\\Resources\\Texture\\Wood.jpg");
-			shared_ptr<Texture> texture2 = Resources::GetInstance()->Load<Texture>(L"Wood_Normal", L"..\\Resources\\Texture\\Wood_Normal.jpg");
-			shared_ptr<Material> material = make_shared<Material>();
-			material->SetShader(shader);
-			material->SetTexture(0, texture);
-			material->SetTexture(1, texture2);
-			meshRenderer->SetMaterial(material);
-		}
-		sphere->AddComponent(meshRenderer);
-		scene->AddGameObject(sphere);
+		obj->AddComponent(meshRenderer);
+		scene->AddGameObject(obj);
 	}
 #pragma endregion
 
 #pragma region UI_Test
+
+	for (int32 i = 0; i < 6; ++i)
 	{
-		shared_ptr<GameObject> sphere = make_shared<GameObject>();
-		sphere->SetLayerIndex(SceneManager::GetInstance()->LayerNameToIndex(L"UI"));
-		sphere->AddComponent(make_shared<Transform>());
-		sphere->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-		sphere->GetTransform()->SetLocalPosition(Vec3(0.f,0.f, 500.f));
+		shared_ptr<GameObject> obj = make_shared<GameObject>();
+		obj->SetLayerIndex(SceneManager::GetInstance()->LayerNameToIndex(L"UI"));
+		obj->AddComponent(make_shared<Transform>());
+		obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(-350.f + (i * 120), 250.f, 500.f));
 		shared_ptr<MeshRenderer> renderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> mesh = Resources::GetInstance()->LoadRectangleMesh();
 			renderer->SetMesh(mesh);
 		}
 		{
-			shared_ptr<Shader> shader = Resources::GetInstance()->Get<Shader>(L"Forward");
-			shared_ptr<Texture> texture = Resources::GetInstance()->Load<Texture>(L"Wood", L"..\\Resources\\Texture\\Wood.jpg");
+			shared_ptr<Shader> shader = Resources::GetInstance()->Get<Shader>(L"Texture");
+
+			shared_ptr<Texture> texture;
+			if (i < 3)
+				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->GetRTTexture(i);
+			else if (i < 5)
+				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING)->GetRTTexture(i - 3);
+			else
+				texture = GET_SINGLE(Resources)->Get<Texture>(L"UAVTexture");
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
 			material->SetTexture(0,texture);
 			renderer->SetMaterial(material);
 		}
 
-		sphere->AddComponent(renderer);
-		scene->AddGameObject(sphere);
+		obj->AddComponent(renderer);
+		scene->AddGameObject(obj);
 	}
 #pragma endregion UI_Test
 
-#pragma region Green Directional Light
+#pragma region Directional Light
 	{
 		shared_ptr<GameObject> light = make_shared<GameObject>();
 		light->AddComponent(make_shared<Transform>());
 		//light->GetTransform()->SetLocalPosition(Vec3(0.f, 150.f, 150.f));
 		light->AddComponent(make_shared<Light>());
-		light->GetLight()->SetLightDirection(Vec3(1.f, 0.f, 1.f));
+		light->GetLight()->SetLightDirection(Vec3(0, 0, 1.f));
 		light->GetLight()->SetLightType(LIGHT_TYPE::DIRECTIONAL_LIGHT);
-		light->GetLight()->SetDiffuse(Vec3(0.5f, 0.5f, 0.5f));
+		light->GetLight()->SetDiffuse(Vec3(1.f, 1.f, 1.f));
 		light->GetLight()->SetAmbient(Vec3(0.1f, 0.1f, 0.1f));
-		light->GetLight()->SetSpecular(Vec3(0.1f, 0.1f, 0.1f));
+		light->GetLight()->SetSpecular(Vec3(0.2f, 0.2f, 0.2f));
 
 		scene->AddGameObject(light);
 	}
-
 #pragma endregion
 
+//#pragma region ParticleSystem
+//	{
+//		shared_ptr<GameObject> particle = make_shared<GameObject>();
+//		particle->AddComponent(make_shared<Transform>());
+//		particle->AddComponent(make_shared<ParticleSystem>());
+//		particle->SetCheckFrustum(false);
+//		particle->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 100.f));
+//		scene->AddGameObject(particle);
+//	}
+//#pragma endregion
 
 	return scene;
 }

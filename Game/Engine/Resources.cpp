@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Resources.h"
+#include "Engine.h"
 
 Resources::Resources()
 {
@@ -13,6 +14,7 @@ Resources::~Resources()
 void Resources::Init()
 {
 	CreateDefaultShader();
+	CreateDefaultMaterial();
 }
 
 shared_ptr<Mesh> Resources::LoadCubeMesh()
@@ -235,28 +237,256 @@ std::shared_ptr<Mesh> Resources::LoadRectangleMesh()
 	return mesh;
 }
 
+shared_ptr<Mesh> Resources::LoadPointMesh()
+{
+	shared_ptr<Mesh> point = Get<Mesh>(L"Point");
+	if (point)
+		return point;
+
+	vector<Vertex> vec(1);
+
+	vec[0] = Vertex(Vec3(0.f, 0.f, 0.f), Vec2(0.5f, 0.5f), Vec3(0.f, 0.f, -1.f), Vec3(1.f, 0.f, 0.f));
+
+	vector<uint32> idx(1);
+	idx[0] = 0;
+
+	shared_ptr<Mesh> mesh = make_shared<Mesh>();
+	mesh->Init(vec, idx);
+	Add(L"Point", mesh);
+
+	return mesh;
+}
+
+shared_ptr<Texture> Resources::CreateTexture(const wstring& name, DXGI_FORMAT format, uint32 width, uint32 height,
+	const D3D12_HEAP_PROPERTIES& heapProperty, D3D12_HEAP_FLAGS heapFlags,
+	D3D12_RESOURCE_FLAGS resFlags, Vec4 clearColor)
+{
+	shared_ptr<Texture> texture = make_shared<Texture>();
+	texture->Create(format, width, height, heapProperty, heapFlags, resFlags, clearColor);
+	Add(name, texture);
+
+	return texture;
+}
+
+shared_ptr<Texture> Resources::CreateTextureFromResource(const wstring& name, ComPtr<ID3D12Resource> tex2D)
+{
+	shared_ptr<Texture> texture = make_shared<Texture>();
+	texture->CreateFromResource(tex2D);
+	Add(name, texture);
+
+	return texture;
+}
+
 void Resources::CreateDefaultShader()
 {
 	//SKYBOX
 	{
 		ShaderInfo info =
 		{
+			SHADER_TYPE::FORWARD,
 			RASTERIZER_TYPE::CULL_NONE,
 			DEPTH_STENCIL_TYPE::LESS_EQUAL
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->Init(L"..\\Resources\\Shader\\skybox.fx",info);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\skybox.fx",info);
 		Add<Shader>(L"Skybox", shader);
 	}
-	//FORWARD
+
+	//DEFERRED
 	{
 		ShaderInfo info =
 		{
+			SHADER_TYPE::DEFERRED,
 
 		};
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->Init(L"..\\Resources\\Shader\\forward.fx", info);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\deferred.fx", info);
+		Add<Shader>(L"Deferred", shader);
+	}
+
+	// Forward (Forward)
+	{
+		ShaderInfo info =
+		{
+			SHADER_TYPE::FORWARD,
+		};
+
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\forward.fx", info);
 		Add<Shader>(L"Forward", shader);
+	}
+
+	// Texture (Forward)
+	{
+		ShaderInfo info =
+		{
+			SHADER_TYPE::FORWARD,
+			RASTERIZER_TYPE::CULL_NONE,
+			DEPTH_STENCIL_TYPE::NO_DEPTH_TEST_NO_WRITE
+		};
+
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\forward.fx", info, "VS_Tex", "PS_Tex");
+		Add<Shader>(L"Texture", shader);
+	}
+
+	// DirLight
+	{
+		ShaderInfo info =
+		{
+			SHADER_TYPE::LIGHTING,
+			RASTERIZER_TYPE::CULL_NONE,
+			DEPTH_STENCIL_TYPE::NO_DEPTH_TEST_NO_WRITE,
+			BLEND_TYPE::ONE_TO_ONE_BLEND
+		};
+
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\lighting.fx", info, "VS_DirLight", "PS_DirLight");
+		Add<Shader>(L"DirLight", shader);
+	}
+
+	// PointLight
+	{
+		ShaderInfo info =
+		{
+			SHADER_TYPE::LIGHTING,
+			RASTERIZER_TYPE::CULL_NONE,
+			DEPTH_STENCIL_TYPE::NO_DEPTH_TEST_NO_WRITE,
+			BLEND_TYPE::ONE_TO_ONE_BLEND
+		};
+
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\lighting.fx", info, "VS_PointLight", "PS_PointLight");
+		Add<Shader>(L"PointLight", shader);
+	}
+
+	// Final
+	{
+		ShaderInfo info =
+		{
+			SHADER_TYPE::LIGHTING,
+			RASTERIZER_TYPE::CULL_BACK,
+			DEPTH_STENCIL_TYPE::NO_DEPTH_TEST_NO_WRITE,
+		};
+
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\lighting.fx", info, "VS_Final", "PS_Final");
+		Add<Shader>(L"Final", shader);
+	}
+
+	// Compute Shader
+	{
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->CreateComputeShader(L"..\\Resources\\Shader\\compute.fx", "CS_Main", "cs_5_0");
+		Add<Shader>(L"ComputeShader", shader);
+
+	}
+
+	// Particle
+	{
+		ShaderInfo info =
+		{
+			SHADER_TYPE::PARTICLE,
+			RASTERIZER_TYPE::CULL_BACK,
+			DEPTH_STENCIL_TYPE::LESS_NO_WRITE,
+			BLEND_TYPE::ALPHA_BLEND,
+			D3D_PRIMITIVE_TOPOLOGY_POINTLIST
+		};
+
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\particle.fx", info, "VS_Main", "PS_Main", "GS_Main");
+		Add<Shader>(L"Particle", shader);
+	}
+
+	// ComputeParticle
+	{
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->CreateComputeShader(L"..\\Resources\\Shader\\particle.fx", "CS_Main", "cs_5_0");
+		Add<Shader>(L"ComputeParticle", shader);
+	}
+}
+
+void Resources::CreateDefaultMaterial()
+{
+	// Skybox
+	{
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Skybox");
+		shared_ptr<Material> material = make_shared<Material>();
+		material->SetShader(shader);
+		Add<Material>(L"Skybox", material);
+	}
+
+	// DirLight
+	{
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"DirLight");
+		shared_ptr<Material> material = make_shared<Material>();
+		material->SetShader(shader);
+		material->SetTexture(0, GET_SINGLE(Resources)->Get<Texture>(L"PositionTarget"));
+		material->SetTexture(1, GET_SINGLE(Resources)->Get<Texture>(L"NormalTarget"));
+		Add<Material>(L"DirLight", material);
+	}
+
+	// PointLight
+	{
+		const WindowInfo& window = GEngine->GetWindow();
+		Vec2 resolution = { static_cast<float>(window.width), static_cast<float>(window.height) };
+
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"PointLight");
+		shared_ptr<Material> material = make_shared<Material>();
+		material->SetShader(shader);
+		material->SetTexture(0, GET_SINGLE(Resources)->Get<Texture>(L"PositionTarget"));
+		material->SetTexture(1, GET_SINGLE(Resources)->Get<Texture>(L"NormalTarget"));
+		material->SetVec2(0, resolution);
+		Add<Material>(L"PointLight", material);
+	}
+
+	// Final
+	{
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Final");
+		shared_ptr<Material> material = make_shared<Material>();
+		material->SetShader(shader);
+		material->SetTexture(0, GET_SINGLE(Resources)->Get<Texture>(L"DiffuseTarget"));
+		material->SetTexture(1, GET_SINGLE(Resources)->Get<Texture>(L"DiffuseLightTarget"));
+		material->SetTexture(2, GET_SINGLE(Resources)->Get<Texture>(L"SpecularLightTarget"));
+		Add<Material>(L"Final", material);
+	}
+
+	//Compute Shader
+	{
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"ComputeShader");
+		shared_ptr<Material> material = make_shared<Material>();
+		material->SetShader(shader);
+		Add<Material>(L"ComputeShader", material);
+
+	}
+
+	// Particle
+	{
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Particle");
+		shared_ptr<Material> material = make_shared<Material>();
+		material->SetShader(shader);
+		Add<Material>(L"Particle", material);
+	}
+
+	// ComputeParticle
+	{
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"ComputeParticle");
+		shared_ptr<Material> material = make_shared<Material>();
+		material->SetShader(shader);
+
+		Add<Material>(L"ComputeParticle", material);
+	}
+
+	//GameObject
+	{
+		shared_ptr<Shader> shader = Resources::GetInstance()->Get<Shader>(L"Deferred");
+		shared_ptr<Texture> texture = Resources::GetInstance()->Load<Texture>(L"Wood", L"..\\Resources\\Texture\\Wood.jpg");
+		shared_ptr<Texture> texture2 = Resources::GetInstance()->Load<Texture>(L"Wood_Normal", L"..\\Resources\\Texture\\Wood_Normal.jpg");
+		shared_ptr<Material> material = make_shared<Material>();
+		material->SetShader(shader);
+		material->SetTexture(0, texture);
+		material->SetTexture(1, texture2);
+		Add<Material>(L"GameObject", material);
 	}
 }

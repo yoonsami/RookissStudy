@@ -2,6 +2,8 @@
 #include "Object.h"
 
 class Material;
+class InstancingBuffer;
+
 class Mesh :public Object
 {
 public:
@@ -9,8 +11,8 @@ public:
 	virtual ~Mesh();
 public:
 	void Init(vector<Vertex>& vertexBuffer, vector<uint32>& indexBuffer);
-	void Render();
-
+	void Render(uint32 instanceCount = 1);
+	void Render(shared_ptr<InstancingBuffer>& buffer);
 private:
 	void CreateVertextBuffer(const vector<Vertex>& buffer);
 	void CreateIndexBuffer(const vector<uint32>& buffer);

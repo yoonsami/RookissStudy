@@ -5,6 +5,7 @@
 #include "Engine.h"
 #include "ConstantBuffer.h"
 #include "Light.h"
+#include "Resources.h"
 
 void Scene::Awake()
 {
@@ -41,43 +42,108 @@ void Scene::Render()
 	// 조명 세팅
 	PushLightData();
 
-	for (auto& gameobject : _gameObjects)
+	// SwapChain Group 초기화
+	int8 backIndex = GEngine->GetSwapChain()->GetBackBufferIndex();
+	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->ClearRenderTargetView(backIndex);
+
+	//Deferred Group 초기화
+	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->ClearRenderTargetView();
+
+	//Lighting Group 초기화
+	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING)->ClearRenderTargetView();
+
+	//Deferred OMSet
+	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->OMSetRenderTargets();
+
+	shared_ptr<Camera> mainCamera = _cameras[0];
+	mainCamera->SortGameObject();
+	mainCamera->Render_Deferred();
+	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->WaitTargetToResource();
+
+	RenderLights();
+	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING)->WaitTargetToResource();
+	
+	RenderFinal();
+
+	mainCamera->Render_Forward();
+
+	for (auto& camera : _cameras)
 	{
-		if (gameobject->GetCamera() == nullptr)
+		if(camera == mainCamera)
 			continue;
 
-		gameobject->GetCamera()->Render();
+		camera->SortGameObject();
+		camera->Render_Forward();
 	}
+}
+
+void Scene::RenderLights()
+{
+	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING)->OMSetRenderTargets();
+
+	// 광원 그림
+	for (auto& light : _lights)
+	{
+		light->Render();
+	}
+}
+
+void Scene::RenderFinal()
+{
+	int8 backIndex = GEngine->GetSwapChain()->GetBackBufferIndex();
+	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->OMSetRenderTargets(1, backIndex);
+
+	GET_SINGLE(Resources)->Get<Material>(L"Final")->PushGraphicsData();
+	GET_SINGLE(Resources)->Get<Mesh>(L"Rectangle")->Render();
 }
 
 void Scene::PushLightData()
 {
 	LightParams lightParams = {};
 
-	for (auto& gameobject : _gameObjects)
+	for (auto& light : _lights)
 	{
-		if(!gameobject->GetLight())
-			continue;
+		const LightInfo& lightInfo = light->GetLightInfo();
 
-		const LightInfo& lightInfo = gameobject->GetLight()->GetLightInfo();
+		light->SetLightIndex(lightParams.lightCount);
+		//todo
 
 		lightParams.light[lightParams.lightCount] = lightInfo;
 		lightParams.lightCount++;
 
 	}
 
-	CONST_BUFFER(CONSTANT_BUFFER_TYPE::GLOBAL)->SetGlobalData(&lightParams, sizeof(lightParams));
+	CONST_BUFFER(CONSTANT_BUFFER_TYPE::GLOBAL)->SetGraphicsGlobalData(&lightParams, sizeof(lightParams));
 }
 
 void Scene::AddGameObject(shared_ptr<GameObject> gameObject)
 {
+	if (gameObject->GetCamera())
+		_cameras.push_back(gameObject->GetCamera());
+
+	else if (gameObject->GetLight())
+		_lights.push_back(gameObject->GetLight());
+
 	_gameObjects.push_back(gameObject);
 }
 
 void Scene::RemoveGameObject(shared_ptr<GameObject> gameObject)
 {
-	auto findit = find(_gameObjects.begin(), _gameObjects.end(), gameObject);
+	if (gameObject->GetCamera())
+	{
+		auto findit = find(_cameras.begin(), _cameras.end(), gameObject->GetCamera());
+		if (findit != _cameras.end())
+			_cameras.erase(findit);
+	}
 
+	if (gameObject->GetLight())
+	{
+		auto findit = find(_lights.begin(), _lights.end(), gameObject->GetLight());
+		if (findit != _lights.end())
+			_lights.erase(findit);
+	}
+
+	auto findit = find(_gameObjects.begin(), _gameObjects.end(), gameObject);
 	if (findit != _gameObjects.end())
 	{
 		_gameObjects.erase(findit);

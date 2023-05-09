@@ -5,6 +5,7 @@
 #include "MonoBehaviour.h"
 #include "Camera.h"
 #include "Light.h"
+#include "ParticleSystem.h"
 
 GameObject::GameObject() :Object(OBJECT_TYPE::GAMEOBJECT)
 {
@@ -103,10 +104,14 @@ shared_ptr<Camera> GameObject::GetCamera()
 	return static_pointer_cast<Camera>(GetFixedComponent(COMPONENT_TYPE::CAMERA));
 }
 
-std::shared_ptr<Light> GameObject::GetLight()
+shared_ptr<Light> GameObject::GetLight()
 {
 	return static_pointer_cast<Light>(GetFixedComponent(COMPONENT_TYPE::LIGHT));
+}
 
+shared_ptr<ParticleSystem> GameObject::GetParticleSystem()
+{
+	return static_pointer_cast<ParticleSystem>(GetFixedComponent(COMPONENT_TYPE::PARTICLE_SYSTEM));
 }
 
 void GameObject::AddComponent(shared_ptr<Component> component)

@@ -17,11 +17,13 @@ public:
 
 public:
 	D3D12_CPU_DESCRIPTOR_HANDLE GetSRVHandle() { return _srvHeapBegin; }
+	D3D12_CPU_DESCRIPTOR_HANDLE GetUAVHandle() { return _uavHeapBegin; }
 	
 	ComPtr<ID3D12Resource>		GetTex2D() { return _tex2D; }
 	ComPtr<ID3D12DescriptorHeap> GetDSV() { return _dsvHeap; }
 	ComPtr<ID3D12DescriptorHeap> GetSRV() { return _srvHeap; }
 	ComPtr<ID3D12DescriptorHeap> GetRTV() { return _rtvHeap; }
+	ComPtr<ID3D12DescriptorHeap> GetUAV() { return _uavHeap; }
 
 public:
 
@@ -32,9 +34,11 @@ private:
 	ComPtr<ID3D12DescriptorHeap>	_srvHeap;
 	ComPtr<ID3D12DescriptorHeap>	_rtvHeap;
 	ComPtr<ID3D12DescriptorHeap>	_dsvHeap;
+	ComPtr<ID3D12DescriptorHeap>	_uavHeap;
 	
 
 
 	D3D12_CPU_DESCRIPTOR_HANDLE		_srvHeapBegin{};
+	D3D12_CPU_DESCRIPTOR_HANDLE		_uavHeapBegin{};
 };
 
