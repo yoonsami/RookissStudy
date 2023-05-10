@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "Input.h"
 #include "Timer.h"
+#include "SceneManager.h"
 
 TestCameraScript::TestCameraScript()
 {
@@ -56,6 +57,13 @@ void TestCameraScript::LateUpdate()
 		Vec3 Rotation = GetTransform()->GetLocalRotation();
 		Rotation.y -= fDT * 0.5f;
 		GetTransform()->SetLocalRotation(Rotation);
+	}
+
+	if (Input::GetInstance()->GetButtonDown(KEY_TYPE::RBUTTON))
+	{
+		const POINT& pos = Input::GetInstance()->GetMousePos();
+		GET_SINGLE(SceneManager)->Pick(pos.x, pos.y);
+
 	}
 
 

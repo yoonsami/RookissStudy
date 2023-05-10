@@ -1,6 +1,7 @@
 #pragma once
 
 class GameObject;
+class Camera;
 class Scene
 {
 
@@ -11,9 +12,18 @@ public:
 	void LateUpdate();
 	void FinalUpdate();
 
+	shared_ptr<Camera> GetMainCamera();
+
 	void Render();
+
+	void ClearRTV();
+
+	void RenderShadow();
+	void RenderDeferred();
 	void RenderLights();
 	void RenderFinal();
+
+	void RenderForward();
 
 private:
 	void PushLightData();
@@ -27,7 +37,7 @@ public:
 
 private:
 	vector<shared_ptr<GameObject>>		_gameObjects;
-	vector<shared_ptr<class Camera>>	_cameras;
+	vector<shared_ptr<Camera>>	_cameras;
 	vector<shared_ptr<class Light>>		_lights;
 
 };

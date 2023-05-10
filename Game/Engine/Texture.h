@@ -26,9 +26,12 @@ public:
 	ComPtr<ID3D12DescriptorHeap> GetUAV() { return _uavHeap; }
 
 public:
+	float GetWidth() { return static_cast<float>(_desc.Width); }
+	float GetHeight() { return static_cast<float>(_desc.Height); }
 
 private:
 	ScratchImage			 		_image;
+	D3D12_RESOURCE_DESC				_desc;
 	ComPtr<ID3D12Resource>			_tex2D;
 
 	ComPtr<ID3D12DescriptorHeap>	_srvHeap;

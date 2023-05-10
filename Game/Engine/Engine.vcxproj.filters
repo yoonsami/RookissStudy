@@ -88,6 +88,15 @@
     <Filter Include="Manager\InstancingManager">
       <UniqueIdentifier>{3d49a88b-d3a6-4c79-95d4-ab6c548a088e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Object\Component\Terrain">
+      <UniqueIdentifier>{9f9a46a6-a12e-4642-ac1b-d163a616bcf7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Component\Collider">
+      <UniqueIdentifier>{f140ba21-29c6-48b0-8ac9-ecd44478e21f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Component\Collider\SphereCollider">
+      <UniqueIdentifier>{2e5d8634-f90d-45fe-b0b3-0370a96825b3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -191,6 +200,15 @@
     </ClCompile>
     <ClCompile Include="InstancingManager.cpp">
       <Filter>Manager\InstancingManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>Object\Component\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseCollider.cpp">
+      <Filter>Object\Component\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="SphereCollider.cpp">
+      <Filter>Object\Component\Collider\SphereCollider</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -299,6 +317,15 @@
     <ClInclude Include="InstancingManager.h">
       <Filter>Manager\InstancingManager</Filter>
     </ClInclude>
+    <ClInclude Include="Terrain.h">
+      <Filter>Object\Component\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseCollider.h">
+      <Filter>Object\Component\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereCollider.h">
+      <Filter>Object\Component\Collider\SphereCollider</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
@@ -328,6 +355,15 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\particle.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\shadow.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\tessellation.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\terrain.fx">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

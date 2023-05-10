@@ -43,11 +43,13 @@ public:
 
 	virtual void FinalUpdate() override;
 	void Render();
+	void RenderShadow();
 
 public:
 	const LightInfo& GetLightInfo() { return _lightInfo; }
+	LIGHT_TYPE GetLightType() { return static_cast<LIGHT_TYPE>(_lightInfo.lightType); }
 
-	void SetLightDirection(const Vec3& dir) { _lightInfo.direction =  dir ; }
+	void SetLightDirection(Vec3 dir);
 
 	void SetDiffuse(const Vec3& diffuse) { _lightInfo.color.diffuse = diffuse ; }
 	void SetAmbient(const Vec3& ambient) { _lightInfo.color.ambient =  ambient ; }
@@ -66,5 +68,7 @@ private:
 	int8 _lightIndex = -1;
 	shared_ptr<class Mesh> _volumeMesh;
 	shared_ptr<class Material> _lightMaterial;
+
+	shared_ptr<GameObject> _shadowCamera;
 };
 

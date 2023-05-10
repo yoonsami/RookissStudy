@@ -54,7 +54,7 @@ void GraphicsCommandQueue::WaitSync()
 	}
 }
 
-void GraphicsCommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
+void GraphicsCommandQueue::RenderBegin()
 {
 	// 기존것 날려줌(capacity는 유ㅜ지)
 	_cmdAlloc->Reset();
@@ -78,9 +78,7 @@ void GraphicsCommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_REC
 
 	_cmdList->ResourceBarrier(1, &barrier);
 
-	// Set the viewport and scissor rect.  This needs to be reset whenever the command list is reset.
-	_cmdList->RSSetViewports(1, vp);
-	_cmdList->RSSetScissorRects(1, rect);
+
 }
 
 void GraphicsCommandQueue::RenderEnd()
