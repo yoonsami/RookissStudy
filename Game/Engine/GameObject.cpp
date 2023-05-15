@@ -8,6 +8,7 @@
 #include "ParticleSystem.h"
 #include "Terrain.h"
 #include "BaseCollider.h"
+#include "Animator.h"
 
 GameObject::GameObject() :Object(OBJECT_TYPE::GAMEOBJECT)
 {
@@ -124,6 +125,11 @@ shared_ptr<Terrain> GameObject::GetTerrain()
 shared_ptr<BaseCollider> GameObject::GetCollider()
 {
 	return static_pointer_cast<BaseCollider>(GetFixedComponent(COMPONENT_TYPE::COLLIDER));
+}
+
+std::shared_ptr<Animator> GameObject::GetAnimator()
+{
+	return static_pointer_cast<Animator>(GetFixedComponent(COMPONENT_TYPE::ANIMATOR));
 }
 
 void GameObject::AddComponent(shared_ptr<Component> component)

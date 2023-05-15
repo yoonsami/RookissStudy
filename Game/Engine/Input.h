@@ -16,9 +16,12 @@ enum class KEY_TYPE
 	E = 'E',
 	Z = 'Z',
 	C = 'C',
-	N1 = '1',
-	N2 = '2',
-	N3 = '3',
+
+
+	KEY_1 = '1',
+	KEY_2 = '2',
+	KEY_3 = '3',
+	KEY_4 = '4',
 
 	SPACE = VK_SPACE,
 	ESC = VK_ESCAPE,
