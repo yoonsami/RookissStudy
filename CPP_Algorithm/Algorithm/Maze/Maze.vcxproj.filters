@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Main">
+      <UniqueIdentifier>{da30872b-464d-4066-8fb4-5cfeacc35ab0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Board">
+      <UniqueIdentifier>{c9bf6cc9-ff4d-4fac-b31b-395085303b64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Board\Board">
+      <UniqueIdentifier>{ce498dc9-25ea-4e78-b071-99b2d37f0b12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Board\ConsoleHelper">
+      <UniqueIdentifier>{54476b7a-0e74-437d-ba78-26693d916193}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Board\Player">
+      <UniqueIdentifier>{04e8915a-3b14-43cd-9288-5328e02e76a5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Maze.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Board.cpp">
+      <Filter>Board\Board</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsoleHelper.cpp">
+      <Filter>Board\ConsoleHelper</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Board\Player</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Board.h">
+      <Filter>Board\Board</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsoleHelper.h">
+      <Filter>Board\ConsoleHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="Struct.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Board\Player</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
