@@ -398,3 +398,5 @@ FodyWeavers.xsd
 *.sln.iml
 새 폴더/DX12/Output
 새 폴더/DX12/Temp
+DX12/Output
+DX12/Temp
