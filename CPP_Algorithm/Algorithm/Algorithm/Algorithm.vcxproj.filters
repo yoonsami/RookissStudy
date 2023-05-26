@@ -12,6 +12,9 @@
     <Filter Include="소스 파일\MyVector">
       <UniqueIdentifier>{c99fbce5-a01c-4493-8b48-e4707d7b00df}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\MyList">
+      <UniqueIdentifier>{42958fad-ec4f-4112-bb97-25a6c384264f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Algorithm.cpp">
@@ -24,6 +27,9 @@
   <ItemGroup>
     <ClInclude Include="MyVector.h">
       <Filter>소스 파일\MyVector</Filter>
+    </ClInclude>
+    <ClInclude Include="MyList.h">
+      <Filter>소스 파일\MyList</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
