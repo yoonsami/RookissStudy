@@ -9,15 +9,11 @@ void Player::Init(Board* board)
 
 	Pos pos = _pos;
 
-	_dest = board->GetExitPos();
+	Pos dest = board->GetExitPos();
 	
-}
-
-void Player::Update(uint64 deltaTime)
-{
-	if (_pos != _dest)
+	while (pos != dest)
 	{
-		
+
 		Pos front[4] = {
 			{-1,0},
 			{0,-1},
@@ -28,86 +24,60 @@ void Player::Update(uint64 deltaTime)
 		int32 newDir = (_dir - 1 + DIR_COUNT) % DIR_COUNT;
 
 
-		if (_board->GetTileType(_pos + front[newDir]) == TileType::EMPTY)
+		if (_board->GetTileType(pos + front[newDir]) == TileType::EMPTY)
 		{
 			_dir = newDir;
-			_pos += front[newDir];
+			pos += front[newDir];
+			_path.push_back(pos);
 		}
 
-		else if (_board->GetTileType(_pos + front[_dir]) == TileType::EMPTY)
+		else if (_board->GetTileType(pos + front[_dir]) == TileType::EMPTY)
 		{
-			_pos += front[_dir];
+			pos += front[_dir];
+			_path.push_back(pos);
 		}
 
 		else
 			_dir = (_dir + 1) % DIR_COUNT;
 
+	}
 
 
+	stack<Pos> s;
+	for (int i = 0; i < _path.size() - 1; ++i)
+	{
+		if (!s.empty() && s.top() == _path[i + 1])
+			s.pop();
+		else
+			s.push(_path[i]);
+	}
 
+	if (!_path.empty())
+		s.push(_path.back());
+	
+	vector<Pos> path;
+	while (!s.empty())
+	{
+		path.push_back(s.top());
+		s.pop();
+	}
 
-		/*switch (_dir)
-		{
-		case DIR_UP:
-		{
-			if (_board->GetTileType({ _pos.y, _pos.x + 1 }) == TileType::EMPTY)
-			{
-				_dir = (DIR_COUNT + _dir - 1) % DIR_COUNT;
-				_pos.x += 1;
-			}
-			else if (_board->GetTileType({ _pos.y - 1, _pos.x }) == TileType::EMPTY)
-			{
-				_pos.y -= 1;
-			}
-			else
-				_dir = (_dir + 1) % DIR_COUNT;
-		}
-		break;
-		case DIR_RIGHT:
-		{
-			if (_board->GetTileType({ _pos.y + 1, _pos.x }) == TileType::EMPTY)
-			{
-				_dir = DIR_DOWN;
-				_pos.y += 1;
-			}
-			else if (_board->GetTileType({ _pos.y, _pos.x + 1 }) == TileType::EMPTY)
-			{
-				_pos.x += 1;
-			}
-			else
-				_dir = (_dir + 1) % DIR_COUNT;
-		}
-		break;
-		case DIR_DOWN:
-		{
-			if (_board->GetTileType({ _pos.y, _pos.x - 1 }) == TileType::EMPTY)
-			{
-				_dir = DIR_LEFT;
-				_pos.x -= 1;
-			}
-			else if (_board->GetTileType({ _pos.y + 1, _pos.x }) == TileType::EMPTY)
-			{
-				_pos.y += 1;
-			}
-			else
-				_dir = (_dir + 1) % DIR_COUNT;
-		}
-		break;
-		case DIR_LEFT:
-		{
-			if (_board->GetTileType({ _pos.y - 1, _pos.x }) == TileType::EMPTY)
-			{
-				_dir = DIR_UP;
-				_pos.y -= 1;
-			}
-			else if (_board->GetTileType({ _pos.y , _pos.x - 1 }) == TileType::EMPTY)
-			{
-				_pos.x -= 1;
-			}
-			else
-				_dir = (_dir + 1) % DIR_COUNT;
-		}
-		break;
-		}*/
+	reverse(path.begin(), path.end());
+
+	_path = path;
+}
+
+void Player::Update(uint64 deltaTime)
+{
+	if (_pathIndex >= _path.size())
+		return;
+
+	_sumTick += deltaTime;
+	if (_sumTick >= MOVE_TICK)
+	{
+		_sumTick = 0;
+
+		_pos = _path[_pathIndex];
+		_pathIndex++;
 	}
 }
