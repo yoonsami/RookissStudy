@@ -7,5 +7,7 @@
 
 int main()
 {
-
+	Graph g;
+	g.CreateGraph();
+	g.BFS(0);
 }
