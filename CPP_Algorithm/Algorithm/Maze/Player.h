@@ -10,11 +10,15 @@ class Player
 public:
 	void		Init(Board* board);
 	void		Update(uint64 deltaTime);
-	void		SetPos(Pos pos) { _pos = pos; }
+	void		SetPos(const Pos& pos) { _pos = pos; }
 	const Pos&	GetPos() { return _pos; }
 
-	
+private:
+	void RightHand();
+	void BFS();
 
+
+	bool CanGo(const Pos& pos);
 private:
 	Pos			_pos = {};
 	int32		_dir = DIR_UP;

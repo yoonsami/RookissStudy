@@ -12,6 +12,13 @@ struct Pos
 		return y == other.y && x == other.x;
 	}
 
+	bool operator<(const Pos& other) const
+	{
+		if (y != other.y)
+			return y < other.y;
+		return x < other.x;
+	}
+
 	bool operator!=(Pos& other)
 	{
 		return !(*this == other);
