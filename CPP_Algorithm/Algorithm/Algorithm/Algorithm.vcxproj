@@ -128,9 +128,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Algorithm.cpp" />
+    <ClCompile Include="Dijkstra.cpp" />
     <ClCompile Include="Graph.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Dijkstra.h" />
     <ClInclude Include="Graph.h" />
     <ClInclude Include="Iterator.h" />
     <ClInclude Include="MyList.h" />
