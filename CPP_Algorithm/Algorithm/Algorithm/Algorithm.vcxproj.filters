@@ -37,5 +37,8 @@
     <ClInclude Include="MyQueue.h">
       <Filter>소스 파일\MySTL</Filter>
     </ClInclude>
+    <ClInclude Include="Graph.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

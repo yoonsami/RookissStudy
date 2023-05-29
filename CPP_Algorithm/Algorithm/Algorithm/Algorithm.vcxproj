@@ -130,6 +130,7 @@
     <ClCompile Include="Algorithm.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Graph.h" />
     <ClInclude Include="Iterator.h" />
     <ClInclude Include="MyList.h" />
     <ClInclude Include="MyQueue.h" />
