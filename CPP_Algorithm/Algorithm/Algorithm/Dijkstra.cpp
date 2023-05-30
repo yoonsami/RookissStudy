@@ -23,9 +23,12 @@ void Dijkstra::GraphDijkstra(int here)
 
 	list<VertexCost> discovered;
 	vector<int> best(6, INT32_MAX);
+	vector<int> parent(6, -1);
+
 
 	discovered.push_back({here,0});
 	best[here] = 0;
+	parent[here] = 0;
 
 	while (!discovered.empty())
 	{
@@ -60,9 +63,10 @@ void Dijkstra::GraphDijkstra(int here)
 			if(nextCost>= best[there])
 				continue;
 
-			best[there] = nextCost;
-
 			discovered.push_back({ there,nextCost });
+			best[there] = nextCost;
+			parent[there] = here;
+
 
 		}
 
