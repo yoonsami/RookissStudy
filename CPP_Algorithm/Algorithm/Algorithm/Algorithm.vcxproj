@@ -136,8 +136,10 @@
     <ClInclude Include="Graph.h" />
     <ClInclude Include="Iterator.h" />
     <ClInclude Include="MyList.h" />
+    <ClInclude Include="MyPriorityQueue.h" />
     <ClInclude Include="MyQueue.h" />
     <ClInclude Include="MyStack.h" />
+    <ClInclude Include="MyTree.h" />
     <ClInclude Include="MyVector.h" />
     <ClInclude Include="Node.h" />
   </ItemGroup>

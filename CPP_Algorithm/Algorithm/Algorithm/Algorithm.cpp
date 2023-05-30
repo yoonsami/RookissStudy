@@ -1,9 +1,10 @@
 ﻿
 #include <iostream>
-#include "Dijkstra.h"
+#include "MyTree.h"
 int main()
 {
-	Dijkstra d;
-	d.CreateGraph();
-	d.GraphDijkstra(0);
+	MyTree t;
+	NodeRef root = t.CreateTree();
+	t.PrintTree(root, 0);
+	int height = t.GetHeight(root);
 }
