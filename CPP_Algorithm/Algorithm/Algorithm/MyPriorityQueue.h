@@ -9,19 +9,37 @@ public:
 	void push(const T& value)
 	{
 		// 구조 결정
+		{
+			_data.push_back(value);
+
+			int nowIndex = static_cast<int>(_data.size() - 1);
+
+			while (nowIndex > 0)
+			{
+				int parentIndex = (nowIndex - 1) / 2;
+				if (_data[parentIndex] > _data[nowIndex])
+					break;
+
+				::swap(_data[nowIndex], _data[parentIndex]);
+
+				nowIndex = parentIndex;
+			}
+		}
+
 		_data.push_back(value);
 
-		int nowIndex = static_cast<int>(_data.size() - 1);
+		int now = static_cast<int>(_data.size());
 
-		while (nowIndex > 0)
+		while (now > 0)
 		{
-			int parentIndex = (nowIndex - 1) / 2;
-			if (_data[parentIndex] > _data[nowIndex])
+			int parent = (now - 1) / 2;
+			if(_data[parent] > _data[now])
 				break;
 
-			::swap(_data[nowIndex], _data[parentIndex]);
+			swap(_data[parent], _data[now]);
+			now = parent;
 
-			nowIndex = parentIndex;
+
 		}
 	}
 	T& top()
@@ -30,31 +48,59 @@ public:
 	}
 	void pop()
 	{
+		{
+			_data[0] = _data.back();
+			_data.pop_back();
+
+			int nowIndex = 0;
+			while (true)
+			{
+				int leftChildIndex = 2 * nowIndex + 1;
+				int rightChildIndex = 2 * nowIndex + 2;
+
+				if (leftChildIndex >= _data.size())
+					break;
+
+				int nextIndex = nowIndex;
+
+				if (_data[leftChildIndex] > _data[nextIndex])
+					nextIndex = leftChildIndex;
+
+				if (rightChildIndex < _data.size() && _data[nextIndex] < _data[rightChildIndex])
+					nextIndex = rightChildIndex;
+
+				if (nextIndex == nowIndex)
+					break;
+
+				::swap(_data[nowIndex], _data[nextIndex]);
+				nowIndex = nextIndex;
+			}
+		}
+
+
 		_data[0] = _data.back();
 		_data.pop_back();
 
-		int nowIndex = 0;
+		int now = 0;
 		while (true)
 		{
-			int leftChildIndex = 2 * nowIndex + 1;
-			int rightChildIndex = 2 * nowIndex + 2;
+			int left = now * 2 + 1;
+			int right = now * 2 + 2;
 
-			if(leftChildIndex >= _data.size())
-				break;
+			if(left >= _data.size()) break;
 
-			int nextIndex = nowIndex;
+			int next = now;
 
-			if (_data[leftChildIndex] > _data[nextIndex])
-				nextIndex = leftChildIndex;
+			if (_data[left] > _data[next]) next = left;
+			if (right < _data.size() && _data[next] < _data[right])
+				next = right;
 
-			if (rightChildIndex < _data.size() && _data[nextIndex] < _data[rightChildIndex])
-				nextIndex = rightChildIndex;
+			if(next == now) break;
 
-			if(nextIndex == nowIndex)
-				break;
+			swap(_data[now], _data[next]);
+			now = next;
 
-			::swap(_data[nowIndex], _data[nextIndex]);
-			nowIndex = nextIndex;
+
 		}
 	}
 

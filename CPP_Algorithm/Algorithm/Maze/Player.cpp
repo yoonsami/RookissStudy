@@ -1,19 +1,24 @@
 #include "pch.h"
 #include "Player.h"
 #include "Board.h"
+#include <queue>
 
 void Player::Init(Board* board)
 {
 	_pos = board->GetEnterPos();
 	_board = board;
 
-	BFS();
+	AStar();
 }
 
 void Player::Update(uint64 deltaTime)
 {
 	if (_pathIndex >= _path.size())
+	{
+		_board->GenerateMap();
+		Init(_board);
 		return;
+	}
 
 	_sumTick += deltaTime;
 	if (_sumTick >= MOVE_TICK)
@@ -93,69 +98,21 @@ void Player::RightHand()
 
 void Player::BFS()
 {
+	
+}
 
-	Pos pos = _pos;
+struct PQNode
+{
+	bool operator<(const PQNode& node) const{return f < node.f;}
+	bool operator>(const PQNode& node) const{return f > node.f;}
+	int32 f;
+	int32 g;
+	Pos pos;
+};
 
-	Pos dest = _board->GetExitPos();
-	Pos front[4] = {
-		{-1,0},
-		{0,-1},
-		{1,0},
-		{0,1}
-	};
-
-	const int32 size = _board->GetSize();
-	vector<vector<bool>> discovered(size,vector<bool>(size,false));
-
-	//vector<vector<Pos>> parent;
-	map<Pos, Pos> parent;
-
-	queue<Pos> q;
-	q.push(pos);
-	discovered[pos.y][pos.x] = true;
-	parent[pos] = pos;
-
-	while (!q.empty())
-	{
-		pos = q.front();
-		q.pop();
-
-		if(pos == dest)
-			break;
-
-		for (int32 dir = 0; dir < 4; ++dir)
-		{
-			Pos nextPos = pos + front[dir];
-
-			if(!CanGo(nextPos))
-				continue;
-
-			if(discovered[nextPos.y][nextPos.x])
-				continue;
-
-			q.push(nextPos);
-			discovered[nextPos.y][nextPos.x] = true;
-			parent[nextPos] = pos;
-		}
-	}
-
-	_path.clear();
-
-	pos = dest;
-
-	while (true)
-	{
-		_path.push_back(pos);
-
-		if(pos == parent[pos])
-			break;
-
-		pos = parent[pos];
-	}
-
-	reverse(_path.begin(), _path.end());
-
-
+void Player::AStar()
+{
+	
 
 }
 
