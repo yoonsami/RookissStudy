@@ -98,7 +98,53 @@ void Player::RightHand()
 
 void Player::BFS()
 {
-	
+	Pos pos = _pos;
+
+	Pos dest = _board->GetExitPos();
+	Pos front[4] = {
+		{-1,0},
+		{0,-1},
+		{1,0},
+		{0,1}
+	};
+
+	queue<Pos> q;
+	map<Pos, bool> discovered;
+	map<Pos, Pos> parent;
+
+	q.push(pos);
+	discovered[pos] = true;
+	parent[pos] = pos;
+
+	while (!q.empty())
+	{
+		pos = q.front();
+		q.pop();
+
+		if(pos == dest) break;
+
+		for (int dir = 0; dir < 4; ++dir)
+		{
+			Pos nextPos = pos + front[dir];
+			if (!CanGo(nextPos)) continue;
+			if (discovered[nextPos]) continue;
+
+			discovered[nextPos] = true;
+			parent[nextPos] = pos;
+			q.push(nextPos);
+		}
+	}
+
+	_path.clear();
+	pos = dest;
+	while (true)
+	{
+		_path.push_back(pos);
+		if(parent[pos]==pos) break;
+		pos = parent[pos];
+	}
+
+	reverse(_path.begin(), _path.end());
 }
 
 struct PQNode
@@ -112,8 +158,93 @@ struct PQNode
 
 void Player::AStar()
 {
-	
+	Pos start = _pos;
+	enum {DIR_COUNT = 4};
+	Pos dest = _board->GetExitPos();
+	Pos front[] = {
+		{-1,0},
+		{0,-1},
+		{1,0},
+		{0,1},
+		{-1,-1},
+		{-1,1},
+		{1,-1},
+		{1,1}
+	};
+	int cost[] = { 10,10,10,10,14,14,14,14 };
 
+	struct PQNode
+	{
+		int f;
+		int g;
+		Pos p;
+		bool operator<(const PQNode& other) const
+		{
+			return f < other.f;
+		}
+		bool operator>(const PQNode& other) const
+		{
+			return !(*this < other);
+		}
+	};
+	int size = _board->GetSize();
+	priority_queue<PQNode> pq;
+	map<Pos, bool> closed;
+	map<Pos, Pos> parent;
+	vector<vector<int>> best(size, vector<int>(size, INT32_MAX));
+	{
+		int g = 0;
+		int h = 10 * (abs(start.y - dest.y) + abs(start.x - dest.x));
+		pq.push({ g + h,g,start });
+		parent[start] = start;
+		best[start.y][start.x] = g + h;
+	}
+	
+	while (!pq.empty())
+	{
+		PQNode node = pq.top();
+		int bestCost = node.f;
+		pq.pop();
+
+		if (closed[node.p]) continue;
+		// or
+		if (best[node.p.y][node.p.x] < bestCost) continue;
+		closed[node.p] = true;
+
+		if (node.p == dest) break;
+
+		for (int dir = 0; dir < DIR_COUNT; ++dir)
+		{
+			Pos nextPos = node.p + front[dir];
+
+			if(!CanGo(nextPos)) continue;
+			if (closed[nextPos]) continue;
+
+			{
+				int g = node.g + cost[dir];
+				int h = 10 * (abs(dest.x - nextPos.x) + abs(dest.y - nextPos.y));
+
+				if(best[nextPos.y][nextPos.x] <= g + h) continue;
+
+				pq.push({ g + h,h,nextPos });
+
+				parent[nextPos] = node.p;
+				best[nextPos.y][nextPos.x] = g + h;
+			}
+		}
+	}
+
+	_path.clear();
+	_pathIndex = 0;
+	Pos pos = dest;
+	while (true)
+	{
+		_path.push_back(pos);
+		if (parent[pos] == pos) break;
+		pos = parent[pos];
+	}
+
+	reverse(_path.begin(), _path.end());
 }
 
 bool Player::CanGo(const Pos& pos)
