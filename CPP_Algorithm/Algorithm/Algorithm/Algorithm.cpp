@@ -4,6 +4,7 @@
 #include <vector>
 #include <queue>
 #include <list>
+#include "BinarySearchTree.h"
 using namespace std;
 
 struct Vertex
@@ -81,9 +82,30 @@ void Dijikstra(int here)
 
 }
 
+
+void BinarySearch(int N)
+{
+	vector<int> numbers;
+	int left = 0;
+	int right = numbers.size() - 1;
+
+	while (left <= right)
+	{
+		int mid = (left + right) / 2;
+		if (numbers[mid] > N) right = mid - 1;
+		else if (numbers[mid] < N) left = mid + 1;
+		else break;
+	}
+}
+
+
+
 int main()
 {
-	CreateGraph();
+	BinarySearchTree bst;
+	bst.insert(20);
+	bst.insert(10);
+	bst.insert(50);
 
-
+	bst.Print();
 }
