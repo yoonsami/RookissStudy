@@ -3,71 +3,73 @@
 #include <atomic>
 #include <mutex>
 #include <windows.h>
+#include <future>
 
-mutex m;
-queue<int32> q;
-HANDLE handle;
-
-// User-Level Object(커널 오브젝트 X)
-condition_variable cv;
-
-//#include <condition_variable>
-//condition_variable_any cv;
-
-void Producer()
+int64 Calculate()
 {
-	while (true)
-	{
-		//Lock과 짝을 지어서 사용
-		// 1) Lock을 잡고
-		// 2) 공유 변수 값 수정
-		// 3) Lock 해제
-		// 4) 조건변수를 통해 다른 쓰레드에 통지
+	int64 sum = 0;
 
-		{
-			unique_lock<mutex> lock(m);
-			q.push(100);
-		}
-
-		cv.notify_one(); // wait중인 쓰레드가 있으면 하나만 깨운다
-	}
+	for (int32 i = 0; i < 100000; ++i)
+		sum += i;
+	return sum;
 }
 
-void Consumer()
+void PromiseWorker(promise<string>&& promise)
 {
-	while (true)
-	{
+	promise.set_value("SecretMessage");
+}
 
-		unique_lock<mutex> lock(m);
-		// 중간에 lock풀어주는 기능이 있어야해서 Lock_Guard 사용 불가
-		cv.wait(lock, []() {return q.empty() == false; });
-		// 1) Lock을 잡고
-		// 2) 조건 확인
-		// 3) 만족하면 빠져나와 코드 진행
-		// 4) 만족하지 않는다면, Lock을 풀고 대기로 전환
-
-		
-		{
-			int32 data = q.front();
-			q.pop();
-			cout << q.size() << endl;
-		}
-	}
+void TaskWorker(packaged_task<int64(void)>&& task)
+{
+	task();
 }
 
 int main()
 {
-	// 이벤트는 커널 오브젝트
-	// Usage Count
-	// Signal(파란불) / Non-Signal(빨간불) << bool
-	// Auto / Manual Reset << bool
-	//handle = ::CreateEvent(NULL/*보안속성*/, TRUE, FALSE, NULL);
+	//동기(synchronous)실행
+	Calculate();
 
-	thread t1(Producer);
-	thread t2(Consumer);
+	//비동기 실행(멀티쓰레드와는 다름)
 
-	t1.join();
-	t2.join();
+	// 단기알바 느낌
+	{
+		//1)deferred - > lazy evaluation( 그냥 나중에 실행 )
+		//2)async - > 별도 쓰레드 생성해서 실행
+		// 3) deferred | async -> 알아서
+		std::future<int64> future = std::async(std::launch::async, Calculate);
 
-	//::CloseHandle(handle);
+		// TODO
+		std::future_status status = future.wait_for(1ms);
+		if (future_status::ready == status) {}
+
+		int64 sum = future.get();
+	}
+
+	{
+		// 미래에 결과물 반환해줄것이라 약속
+		std::promise<string> promise;
+		future<string> future = promise.get_future();
+
+		thread t(PromiseWorker, std::move(promise));
+
+
+		cout <<future.get() << endl;
+		t.join();
+
+
+	}
+
+	{
+		//
+		std::packaged_task<int64(void)> task(Calculate);
+		std::future<int64> future = task.get_future();
+
+		thread t(TaskWorker, move(task));
+
+		int64 sum = future.get();
+		cout << sum << endl;
+
+		t.join();
+
+	}
 }
