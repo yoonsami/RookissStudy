@@ -4,72 +4,55 @@
 #include <mutex>
 #include <windows.h>
 #include <future>
-
-int64 Calculate()
-{
-	int64 sum = 0;
-
-	for (int32 i = 0; i < 100000; ++i)
-		sum += i;
-	return sum;
-}
-
-void PromiseWorker(promise<string>&& promise)
-{
-	promise.set_value("SecretMessage");
-}
-
-void TaskWorker(packaged_task<int64(void)>&& task)
-{
-	task();
-}
-
+atomic<bool> flag = false;
 int main()
 {
-	//동기(synchronous)실행
-	Calculate();
+	flag = false;
 
-	//비동기 실행(멀티쓰레드와는 다름)
-
-	// 단기알바 느낌
+	//if (flag.is_lock_free())
+	//{
+	//	//원래 원자적 처리 가능
+	//}
 	{
-		//1)deferred - > lazy evaluation( 그냥 나중에 실행 )
-		//2)async - > 별도 쓰레드 생성해서 실행
-		// 3) deferred | async -> 알아서
-		std::future<int64> future = std::async(std::launch::async, Calculate);
-
-		// TODO
-		std::future_status status = future.wait_for(1ms);
-		if (future_status::ready == status) {}
-
-		int64 sum = future.get();
+		flag = true;
+		bool val = flag;
+	}
+	{
+		flag.store(true);
+		bool val = flag.load();
+	}
+	{
+		flag.store(true,memory_order::memory_order_seq_cst);
+		bool val = flag.load(memory_order::memory_order_seq_cst);
 	}
 
 	{
-		// 미래에 결과물 반환해줄것이라 약속
-		std::promise<string> promise;
-		future<string> future = promise.get_future();
-
-		thread t(PromiseWorker, std::move(promise));
-
-
-		cout <<future.get() << endl;
-		t.join();
-
+		bool prev = flag; // 다른 쓰레드에서 쓰고있으면 유효하지 않을 수 있음
+		flag = true;
 
 	}
-
+	// ->
 	{
-		//
-		std::packaged_task<int64(void)> task(Calculate);
-		std::future<int64> future = task.get_future();
+		bool prev = flag.exchange(true);
+	}
 
-		thread t(TaskWorker, move(task));
+	//CAS 조건부 수정
+	{
+		bool expected = false;
+		bool desired = true;
+		flag.compare_exchange_strong(expected, desired);
 
-		int64 sum = future.get();
-		cout << sum << endl;
-
-		t.join();
-
+		if (flag == expected)
+		{
+			flag = desired;
+			return true;
+		}
+		else
+		{
+			expected = flag;
+			return false;
+		}
+		// 사용법 똑같지만, Spurious Failure 문제가 있을 수 있음. while문 써서 사용할 것
+		flag.compare_exchange_weak(expected, desired);
 	}
 }
