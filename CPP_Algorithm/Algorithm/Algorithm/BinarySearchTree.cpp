@@ -79,19 +79,16 @@ BSTNode* BinarySearchTree::Next(BSTNode* node)
 {
 	if (!node) return node;
 
-	if (node->right)
-		return Min(node);
+	if (node->right) return Min(node->right);
 
 	BSTNode* parent = node->parent;
 
-	while (parent && node == parent->right)
+	while (parent && parent->right == node)
 	{
 		node = parent;
 		parent = parent->parent;
 	}
-
-
-	return parent ;
+	return parent;
 }
 
 void BinarySearchTree::insert(int key)
@@ -107,19 +104,19 @@ void BinarySearchTree::insert(int key)
 
 	BSTNode* node = _root;
 	BSTNode* parent = nullptr;
+
 	while (node)
 	{
 		parent = node;
-		if (key < node->key)
+
+		if (node->key > key)
 			node = node->left;
 		else
 			node = node->right;
-
-
 	}
 
 	newNode->parent = parent;
-	if (key < parent->key)
+	if (parent->key > key)
 		parent->left = newNode;
 	else
 		parent->right = newNode;
@@ -127,7 +124,7 @@ void BinarySearchTree::insert(int key)
 
 void BinarySearchTree::Delete(int key)
 {
-	BSTNode* deleteNode = search(_root, key);
+	BSTNode* deleteNode = search2(_root, key);
 	Delete(deleteNode);
 }
 
@@ -145,13 +142,11 @@ void BinarySearchTree::Delete(BSTNode* node)
 		node->key = next->key;
 		Delete(next);
 	}
-
 }
 
 void BinarySearchTree::Replace(BSTNode* u, BSTNode* v)
 {
-	if (!u->parent)
-		_root = v;
+	if (!u->parent) _root = v;
 	else if (u == u->parent->left)
 		u->parent->left = v;
 	else

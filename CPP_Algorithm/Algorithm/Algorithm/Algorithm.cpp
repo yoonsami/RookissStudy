@@ -1,111 +1,164 @@
-﻿
-#include <iostream>
-#include "MyTree.h"
+﻿#include <string>
 #include <vector>
 #include <queue>
-#include <list>
-#include "BinarySearchTree.h"
 using namespace std;
 
-struct Vertex
+void BubbleSort(vector<int>& v)
 {
-
-};
-
-vector<Vertex> vertex;
-vector<vector<int>> adjacent;
-
-void CreateGraph()
-{
-	vertex.resize(6);
-	adjacent.resize(6, vector<int>(6, -1));
-	adjacent[0][1] = 15;
-	adjacent[0][3] = 35;
-	adjacent[1][0] = 15;
-	adjacent[1][2] = 5;
-	adjacent[1][3] = 10;
-	adjacent[3][4] = 5;
-	adjacent[5][4] = 5;
-}
-
-void Dijikstra(int here)
-{
-	struct VertexCost
+	const int n = (int)v.size();
+	for (int i = 0; i < n - 1; ++i)
 	{
-		int vertex;
-		int cost;
-	};
-
-	list<VertexCost> discovered;
-	vector<int> best(6, INT32_MAX);
-	vector<int > parent(6, -1);
-
-	discovered.push_back({ here,0 });
-	best[here] = 0;
-	parent[here] = here;
-
-	while (!discovered.empty())
-	{
-		
-		list<VertexCost>::iterator bestIt;
-		int bestCost = INT32_MAX;
-
-		for (auto it = discovered.begin(); it != discovered.end(); ++it)
+		for (int j = 0; j < n - 1 - i; ++j)
 		{
-			if (it->cost < bestCost)
-			{
-				bestCost = it->cost;
-				bestIt = it;
-			}
+			if (v[j] > v[j + 1]) swap(v[j], v[j + 1]);
 		}
-
-		int cost = bestIt->cost;
-		here = bestIt->vertex;
-		discovered.erase(bestIt);
-
-		if(cost > best[here]) continue;
-
-		for (int there = 0; there < 6; ++there)
-		{
-			if(adjacent[here][there] == -1) continue;
-
-			int nextCost = best[here] + adjacent[here][there];
-			if(nextCost >= best[there]) continue;
-
-			best[there] = nextCost;
-			parent[there] = here;
-			discovered.push_back({ there,nextCost });
-		}
-
-
-	}
-
-}
-
-
-void BinarySearch(int N)
-{
-	vector<int> numbers;
-	int left = 0;
-	int right = numbers.size() - 1;
-
-	while (left <= right)
-	{
-		int mid = (left + right) / 2;
-		if (numbers[mid] > N) right = mid - 1;
-		else if (numbers[mid] < N) left = mid + 1;
-		else break;
 	}
 }
 
+void SelectionSort(vector<int>& v)
+{
+	const int n = (int)v.size();
+	for (int i = 0; i < n - 1; ++i)
+	{
+		int bestIdx = i;
+		for (int j = i + 1; j < n; ++j)
+		{
+			if (v[j] < v[bestIdx])
+				bestIdx = j;
+		}
 
+
+		swap(v[i], v[bestIdx]);
+
+	}
+}
+
+void InsertionSort(vector<int>& v)
+{
+
+	const int n = (int)v.size();
+
+	for (int i = 1; i < n; ++i)
+	{
+		int insertData = v[i];
+		int j;
+		for (j = i - 1; j >= 0; j--)
+		{
+			if (v[j] > insertData)
+				v[j + 1] = v[j];
+			else break;
+		}
+
+		v[j + 1] = insertData;
+	}
+}
+
+// 힙 정렬
+void HeapSort(vector<int>& v)
+{
+	priority_queue<int, vector<int>, greater<int>> pq;
+
+	for (int num : v) pq.push(num);
+	v.clear();
+
+	while (!pq.empty())
+	{
+		v.push_back(pq.top());       
+		pq.pop();
+	}
+}
+
+void MergeResult(vector<int>& v, int left, int mid, int right)
+{
+	vector<int> tmp;
+	int leftIdx = left;
+	int rightIdx = mid + 1;
+
+	while (leftIdx <= mid && rightIdx << right)
+	{
+		if (v[leftIdx] <= v[rightIdx])
+		{
+			tmp.push_back(v[leftIdx]);
+			leftIdx++;
+		}
+		else
+		{
+			tmp.push_back(v[rightIdx]);
+			rightIdx++;
+		}
+	}
+
+	if (leftIdx >= mid)
+	{
+		while (rightIdx<=right)
+		{
+			tmp.push_back(v[rightIdx]);
+			rightIdx++;
+		}
+	}
+	else
+	{
+		while (leftIdx<=mid)
+		{
+			tmp.push_back(v[leftIdx]);
+			leftIdx++;
+		}
+	}
+
+	for (int i = 0; i < tmp.size(); ++i)
+		v[left + i] = tmp[i];
+}
+
+// 병합 정렬
+// 분할 정복
+void MergeSort(vector<int>& v,int left, int right)
+{
+	if (left >= right)
+		return;
+
+	int mid = (left + right) / 2;
+	MergeSort(v, left, mid);
+	MergeSort(v, mid + 1, right);
+	
+	MergeResult(v, left, mid, right);
+
+
+}
+
+int Partition(vector<int>& v, int left, int right)
+{
+	int pivot = v[left];
+	int low = left + 1;
+	int high = right;
+
+	while (low <= high)
+	{
+		while (low <= right&&pivot >= v[low]) low++;
+
+		while (high >= left + 1 && pivot <= v[high]) high--;
+
+		if (low < high)
+			swap(v[low], v[high]);
+	}
+
+	swap(v[left], v[high]);
+
+	return high;
+}
+
+void QuickSort(vector<int>& v, int left, int right)
+{
+	if (left > right)
+		return;
+
+	int pivot = Partition(v, left, right);
+	QuickSort(v, left, pivot - 1);
+	QuickSort(v, pivot+1, right);
+
+
+}
 
 int main()
 {
-	BinarySearchTree bst;
-	bst.insert(20);
-	bst.insert(10);
-	bst.insert(50);
-
-	bst.Print();
+	return 0;
 }

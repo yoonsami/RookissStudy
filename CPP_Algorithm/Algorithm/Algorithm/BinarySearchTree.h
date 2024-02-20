@@ -1,4 +1,11 @@
 #pragma once
+
+enum class Color
+{
+	Red = 0,
+	Black = 1,
+};
+
 struct BSTNode
 {
 	BSTNode* parent = nullptr;
