@@ -8,6 +8,8 @@ mutex m;
 queue<int32> q;
 HANDLE handle;
 
+
+
 void Producer()
 {
 	while (true)
@@ -27,13 +29,15 @@ void Consumer()
 	while (true)
 	{
 		::WaitForSingleObject(handle, INFINITE);
-
+		// Auto인 경우 Non-Signal 상태로 변환
+		// Manual인 경우
+		::ResetEvent(handle);
 		unique_lock<mutex> lock(m);
 		if (!q.empty())
 		{
 			int32 data = q.front();
 			q.pop();
-			cout << data << endl;
+			cout << q.size() << endl;
 		}
 	}
 }
@@ -44,7 +48,7 @@ int main()
 	// Usage Count
 	// Signal(파란불) / Non-Signal(빨간불) << bool
 	// Auto / Manual Reset << bool
-	handle = ::CreateEvent(NULL/*보안속성*/, FALSE, FALSE, NULL);
+	handle = ::CreateEvent(NULL/*보안속성*/, TRUE, FALSE, NULL);
 
 	thread t1(Producer);
 	thread t2(Consumer);
