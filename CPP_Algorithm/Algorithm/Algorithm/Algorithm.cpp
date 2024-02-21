@@ -158,7 +158,65 @@ void QuickSort(vector<int>& v, int left, int right)
 
 }
 
+// map vs hash_map(unordered_map)
+// 
+// map : red black tree
+// - 추가 탐색 삭제 -> O(logN)
+// 
+// unordered_map
+// - 추가 탐색 삭제 -> O(1) : 제약조건이 있긴 함
+// 메모리를 내주고 속도를 취한다
+//'해시' '테이블'
+//
+//
+
+class DisjointSet
+{
+public:
+	DisjointSet(int n) : _parent(n)
+	{
+		for (int i = 0; i < n; ++i)
+			_parent[i] = i;
+	}
+
+	int Find(int u)
+	{
+		if (_parent[u] == u) return u;
+
+		return _parent[u] = Find(_parent[u]);
+	}
+
+	void Merge(int u, int v)
+	{
+		u = Find(u);
+		v = Find(v);
+
+		if (u == v) return;
+
+		if (_rank[u] > _rank[v]) swap(u, v);
+
+		_parent[u] = v;
+
+		if (_rank[u] == _rank[v]) _rank[v]++;
+	}
+
+
+private:
+	vector<int> _parent;
+	vector<int> _rank;
+};
+
+// 최소 스패닝 트리
+
+
+// 상호배타적 집합(Disjoint Set)
+// ->union_find
+
+
+
 int main()
 {
+
+
 	return 0;
 }

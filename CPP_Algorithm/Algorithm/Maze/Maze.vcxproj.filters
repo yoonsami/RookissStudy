@@ -33,6 +33,9 @@
     <ClCompile Include="Player.cpp">
       <Filter>Board\Player</Filter>
     </ClCompile>
+    <ClCompile Include="DisjointSet.cpp">
+      <Filter>Board</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -52,6 +55,9 @@
     </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>Board\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="DisjointSet.h">
+      <Filter>Board</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

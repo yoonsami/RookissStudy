@@ -15,7 +15,7 @@ void Player::Update(uint64 deltaTime)
 {
 	if (_pathIndex >= _path.size())
 	{
-		_board->GenerateMap();
+		_board->Init(25,this);
 		Init(_board);
 		return;
 	}
