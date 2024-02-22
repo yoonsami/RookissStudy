@@ -5,31 +5,41 @@
 #include <windows.h>
 #include <future>
 
-//쓰레드마다 고유하게 가질 정보가 된다
-thread_local int32 LThreadId = 0;
-thread_local queue<int32> q;
+#include "ConcurrentQueue.h"
+#include "ConcurrentStack.h"
 
-void ThreadMain(int32 threadId)
+queue<int32> q;
+stack<int32> s;
+
+LockQueue<int32> lq;
+LockStack<int32> ls;
+
+void Push()
 {
-	LThreadId = threadId;
-
 	while (true)
 	{
-		cout << "I am Thread " << LThreadId << endl;
-		this_thread::sleep_for(1s);
+		int32 value = rand() % 100;
+		lq.Push(value);
+
+
+	}
+}
+void Pop()
+{
+	while (true)
+	{
+		int32 data = 0;
+		if(lq.TryPop(OUT data))
+			cout << data << endl;
 	}
 }
 
 int main()
 {
-	vector<thread> threads;
-	for (int32 i = 0; i < 10; ++i)
-	{
-		int32 threadId = i + 1;
-		threads.push_back(thread(ThreadMain, threadId));
-	}
+	thread t1(Push);
+	thread t2(Pop);
 
-	for (thread& t : threads)
-		t.join();
+	t1.join();
+	t2.join();
 	
 }
