@@ -1,6 +1,7 @@
 ﻿#include <string>
 #include <vector>
 #include <queue>
+#include <iostream>
 using namespace std;
 
 void BubbleSort(vector<int>& v)
@@ -206,17 +207,131 @@ private:
 	vector<int> _rank;
 };
 
-// 최소 스패닝 트리
+// 동적 계획법
+// 
+// 
+// 부분수열
+// LIS(Longest Increasing Sequence)
+// 제일 긴 순 증가 부분 수열의 길이
 
 
-// 상호배타적 집합(Disjoint Set)
-// ->union_find
+// 틱택토
+using BoardType = vector<vector<char>>;
+BoardType board;
+int cache[19683];
+
+bool IsFinished(const BoardType& board, char turn)
+{
+	for (int i = 0; i < 3; ++i)
+		if (board[i][0] == turn && board[i][1] == turn && board[i][2] == turn)
+			return true;
+
+	for (int i = 0; i < 3; ++i)
+		if (board[0][i] == turn && board[1][i] == turn && board[2][i] == turn)
+			return true;
+
+	if (board[0][0] == turn && board[1][1] == turn && board[2][2] == turn)
+		return true;
+
+	if (board[0][2] == turn && board[1][1] == turn && board[2][0] == turn)
+		return true;
+
+	return false;
+}
+
+enum {
+	DEFAULT = 2,
+	WIN =1,
+	DRAW = 0,
+	LOSE = -1
+};
+
+int HashKey(const BoardType& board)
+{
+	int ret = 0;
+	for (int y = 0; y < 3; ++y)
+	{
+		for (int x = 0; x < 3; ++x)
+		{
+			ret = ret * 3;
+
+			if (board[y][x] == 'o')
+				ret += 1;
+			else if (board[y][x] == 'x')
+				ret += 2;
+		}
+	}
+	return ret;
+}
+
+int CanWin(BoardType& board, char turn)
+{
+	// 기저 사례
+	if (IsFinished(board, 'o' + 'x' - turn))
+		return LOSE;
+
+	// 캐시 확인
+	int key = HashKey(board);
+	int& ret = cache[key];
+	if (ret != DEFAULT)
+		return ret;
+
+	int minValue = DEFAULT;
+
+	for (int y = 0; y < 3; ++y)
+	{
+		for (int x = 0; x < 3; ++x)
+		{
+			if(board[y][x] != '.')
+				continue;
+
+			board[y][x] = turn;
+
+			minValue = min(minValue, CanWin(board, 'o' + 'x' - turn));
+
+			board[y][x] = '.';
 
 
+		}
+	}
+
+	if (minValue == DRAW || minValue == DEFAULT)
+		return ret = DRAW;
+
+	return ret = -minValue;
+}
+
+
+
+int N;
+
+int cache2[9999];
+
+int Enchant(int num)
+{
+	if (num > N)
+		return 0;
+
+	if (num == N)
+		return 1;
+
+	int& ret = cache2[num];
+	if (ret != -1)
+		return ret;
+
+	return ret = Enchant(num+1) + Enchant(num+2) + Enchant(num+3);
+}
 
 int main()
 {
+	N = 2;
+	for (int i = 0; i < 9999; ++i)
+	{
+		cache2[i] = -1;
+	}
 
-
+	int ret = Enchant(0);
+	
+	cout << ret << endl;
 	return 0;
 }
