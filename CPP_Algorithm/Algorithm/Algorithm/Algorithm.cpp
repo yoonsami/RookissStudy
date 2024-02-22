@@ -322,16 +322,164 @@ int Enchant(int num)
 	return ret = Enchant(num+1) + Enchant(num+2) + Enchant(num+3);
 }
 
-int main()
+#include <string>
+#include <vector>
+
+using namespace std;
+int maxGap = -1;
+vector<int> answer;
+void dfs(int count, int n, vector<int>& rian, vector<int>& info)
 {
-	N = 2;
-	for (int i = 0; i < 9999; ++i)
+	if (count == n)
 	{
-		cache2[i] = -1;
+		for (int i = 0; i <= n; ++i)
+		{
+			cout << rian[i] << " ";
+		}
+		cout << endl;
+		int rianTotal = 0;
+		int apeachTotal = 0;
+		for (int i = 0; i <= 10; ++i)
+		{
+			if (rian[i] > info[i]) rianTotal += 10 - i;
+			else apeachTotal += 10 - i;
+		}
+
+		if (rianTotal <= apeachTotal) return;
+
+		if (maxGap < rianTotal - apeachTotal)
+		{
+			maxGap = rianTotal - apeachTotal;
+			answer = rian;
+		}
+		else if (maxGap == rianTotal - apeachTotal)
+		{
+			for (int i = 10; i >= 0; --i)
+			{
+				if (answer[i] < rian[i])
+				{
+					answer = rian;
+					return;
+				}
+			}
+		}
+		return;
 	}
 
-	int ret = Enchant(0);
+
+	for (int i = 0; i <= 10; ++i)
+	{
 	
-	cout << ret << endl;
+		rian[i]++;
+		dfs(count + 1, n, rian, info);
+		rian[i]--;
+
+	}
+
+
+}
+
+#include <string>
+#include <vector>
+#include <queue>
+#include <map>
+#include <iostream>
+
+
+
+using namespace std;
+
+struct Pos
+{
+
+	int y = 0;
+	int x = 0;
+	int dir = 0;
+
+	bool operator<(Pos& other) { if (y != other.y)return y < other.y; return x < other.x; }
+	bool operator<(const Pos& other)  const { if (y != other.y)return y < other.y; return x < other.x; }
+	Pos& operator+=(const Pos& other) { y += other.y; x += other.x; return(*this); }
+	Pos operator+(const Pos& other) { return{ y + other.y,x + other.x }; }
+	bool operator==(Pos& other) { return (other.x == x && other.y == y); }
+	bool operator!=(Pos& other) { return !((*this) == other); }
+};
+
+Pos front[4] = { {1,0},{0,1},{-1,0},{0,-1} };
+
+int solution(vector<vector<int>> board) {
+	int answer = 0;
+	int size = board.size();
+	vector<vector<int>>cost(size,vector<int>(size,INT32_MAX));
+
+	Pos startPos = { 0,0,-1 };
+	Pos dest = { size - 1,size - 1 };
+	Pos curPos = startPos;
+
+	queue<Pos> q;
+	q.push(startPos);
+
+	cost[startPos.y][startPos.x] = 0;
+
+	while (!q.empty())
+	{
+		curPos = q.front();
+		q.pop();
+
+		if (curPos == dest)
+		{
+			answer = min(answer, cost[dest.y][dest.x]);
+			continue;
+		}
+
+		for (int dir = 0; dir < 4; ++dir)
+		{
+			Pos newPos = curPos + front[dir];
+
+			if (newPos.x < 0 || newPos.x >= size || newPos.y < 0 || newPos.y >= size) continue;
+
+			if(board[newPos.y][newPos.x] == 1) continue;
+
+			int newCost = cost[curPos.y][curPos.x];
+			if (curPos.dir == -1) newCost += 100;
+			else if (curPos.dir == dir) newCost += 100;
+			else newCost += 600;
+
+			if(newCost > cost[newPos.y][newPos.x]) continue;
+
+			cost[newPos.y][newPos.x] = newCost;
+			newPos.dir = dir;
+			q.push(newPos);
+
+		}
+	}
+
+	return answer = cost[dest.y][dest.x];
+}
+
+struct Shoe
+{
+	Shoe(int a, int b, int c, int d)
+	{
+		time = a;
+		start = a + b;
+		end = a + b + c;
+		speed = d;
+	}
+	int time;
+	int start;
+	int end;
+	int speed;
+};
+
+int T;
+vector<Shoe> shoes;
+vector<int>cache;
+
+
+int main()
+{
+	T = 20;
+	shoes.push_back(Shoe{ 3,4,10,3 });
+
 	return 0;
 }
