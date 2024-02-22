@@ -473,13 +473,62 @@ struct Shoe
 
 int T;
 vector<Shoe> shoes;
-vector<int>cache;
+vector<int>cache4;
 
+// now번 신발을 신고 갈 수 있는 최대 거리
+int Solve(int now)
+{
+	// 기저 사례
+	if (now >= shoes.size())
+		return 0;
+
+
+	// 캐시
+	int& ret = cache[now];
+	if (ret != -1)
+		return ret;
+
+	// 적용
+	Shoe& shoe = shoes[now];
+
+	int dist = (shoe.end - shoe.start) * shoe.speed + (T -shoe.end) * 1;
+	ret = max(ret, dist);
+
+	// 다른 신발
+	for (int next = now + 1; next < shoes.size(); next++)
+	{
+		Shoe& nextShoe = shoes[next];
+		if(nextShoe.time < shoe.start) continue;
+
+		// 다음 신발까지 이동거리
+		int moveDist = 0;
+		// 신발 지속 중 등장한 경우
+		if (nextShoe.time <= shoe.end)
+		{
+			moveDist = (nextShoe.time - shoe.start) * shoe.speed;
+		}
+		else
+		{
+			moveDist = (shoe.end - shoe.start) * shoe.speed + (nextShoe.time - shoe.end) * 1;
+		}
+
+		ret = max(ret, moveDist + Solve(next));
+	}
+
+	return ret;
+}
 
 int main()
 {
 	T = 20;
-	shoes.push_back(Shoe{ 3,4,10,3 });
+	shoes.push_back(Shoe(0, 0, T, 1));
+	shoes.push_back(Shoe(3,4,10,3));
+	shoes.push_back(Shoe(4,1,4,2));
+	shoes.push_back(Shoe(10,2,5,5));
+	shoes.push_back(Shoe(15,1,3,7));
+	sort(shoes.begin(), shoes.end(), [=](Shoe& left, Shoe& right) {return left.time < right.time; });
+	cache4 = vector<int>(shoes.size() ,- 1);
+
 
 	return 0;
 }
