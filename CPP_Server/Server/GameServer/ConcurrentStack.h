@@ -126,7 +126,7 @@ public:
 				//여기서 누가 끼어들어도 이미 데이터 분리해서 상관ㄴ
 				DeleteNodes(node);
 			}
-			else
+			else if(node)
 			{
 				//누가 끼어들었으니 다음에 하자.
 				ChainPendingNodeList(node);
