@@ -1,21 +1,29 @@
 ﻿#include "pch.h"
 #include "ThreadManager.h"
-
-void ThreadManagerTest()
-{
-	while (true)
-	{
-		cout << "I am Thread " << LThreadId << endl;
-		this_thread::sleep_for(1s);
-	}
-}
+#include "AccountManager.h"
+#include "PlayerManager.h"
 
 int main()
 {
-	for (int32 i = 0; i < 5; ++i)
-	{
-		GThreadManager->Launch(ThreadManagerTest);
-	}
+	GThreadManager->Launch([=]
+		{
+			while (true)
+			{
+				cout << "PlayerThenAccount" << endl;
+				GPlayerManager.PlayerThenAccount();
+				this_thread::sleep_for(100ms);
+			}
+		});
+
+	GThreadManager->Launch([=]
+		{
+			while (true)
+			{
+				cout << "AccountThenPlayer" << endl;
+				GAccountManager.AccountThenPlayer();
+				this_thread::sleep_for(100ms);
+			}
+		});
 
 	GThreadManager->Join();
 }
