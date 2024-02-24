@@ -1,45 +1,21 @@
 ﻿#include "pch.h"
-#include <thread>
-#include <atomic>
-#include <mutex>
-#include <windows.h>
-#include <future>
+#include "ThreadManager.h"
 
-#include "ConcurrentQueue.h"
-#include "ConcurrentStack.h"
-
-queue<int32> q;
-stack<int32> s;
-
-LockQueue<int32> lq;
-LockStack<int32> ls;
-
-void Push()
+void ThreadManagerTest()
 {
 	while (true)
 	{
-		int32 value = rand() % 100;
-		lq.Push(value);
-
-
-	}
-}
-void Pop()
-{
-	while (true)
-	{
-		int32 data = 0;
-		if(lq.TryPop(OUT data))
-			cout << data << endl;
+		cout << "I am Thread " << LThreadId << endl;
+		this_thread::sleep_for(1s);
 	}
 }
 
 int main()
 {
-	thread t1(Push);
-	thread t2(Pop);
+	for (int32 i = 0; i < 5; ++i)
+	{
+		GThreadManager->Launch(ThreadManagerTest);
+	}
 
-	t1.join();
-	t2.join();
-	
+	GThreadManager->Join();
 }

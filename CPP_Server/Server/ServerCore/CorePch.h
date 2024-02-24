@@ -1,6 +1,10 @@
 #pragma once
 
 #include "Types.h"
+#include "CoreMacro.h"
+#include "CoreTLS.h"
+#include "CoreGlobal.h"
+
 
 #include <memory>
 #include <vector>
