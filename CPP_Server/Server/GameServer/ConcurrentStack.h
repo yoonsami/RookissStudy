@@ -56,7 +56,8 @@ class LockFreeStack
 {
 	struct Node
 	{
-		Node(const T& value) : data(value){}
+		Node(const T& value) : data(value),next(nullptr)
+		{}
 		T data;
 		Node* next;
 	};
@@ -64,19 +65,17 @@ class LockFreeStack
 public:
 	void Push(const T& value)
 	{
+		//1) 노드 생성
+		//2) 새 노드의 next를 헤드로
+		//3) 헤드를 새 노드로
 		Node* node = new Node(value);
 		node->next = _head;
-		// 이 사이에 새치기 당할 수 있다.
-
-		//compare and swap 사용
+		
 		while (_head.compare_exchange_weak(node->next, node) == false)
 		{
 
 		}
-		// -> if(_head == node->next) { _head = node; return true;}
-		// else { node->next = _head; return false;}
-		// 경합이 너무 심하면 
-		// 오히려 while을 못벗어나서 느려질 수 있다.
+
 	}
 
 	bool TryPop(T& value)
@@ -96,8 +95,11 @@ public:
 		if (oldHead == nullptr) return false;
 		//Exception X
 		value = oldHead->data;
+		// GARBAGE Collector 잇으면 끝
+		//없으면 누수 잡아야함
+		// 잠시 삭제 보류
 
-		delete oldHead;
+
 		return true;
 	}
 
@@ -105,6 +107,7 @@ private:
 
 
 	atomic<Node*> _head;
+	
 
 
 };
