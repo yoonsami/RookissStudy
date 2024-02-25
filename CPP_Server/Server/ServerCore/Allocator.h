@@ -12,6 +12,7 @@ public:
 };
 
 // StompAllocator
+// 
 // 속도 뭐 이런거보다 메모리 오염 같은 버그 잡기에 좋음
 // ex) 메모리 해제 후에 사용하려는 문제(Use After Free)
 //// 유저레벨(메모장 등)
@@ -49,4 +50,29 @@ public:
 	static void		Release(void* ptr);
 
 
+};
+
+// STLAllocator
+
+template<typename T>
+class STLAllocator
+{
+public:
+	using value_type = T;
+
+	STLAllocator(){}
+
+	template<typename Other>
+	STLAllocator(const STLAllocator<Other>&){}
+
+	T* allocate(size_t count)
+	{
+		const int32 size = static_cast<int32>(count * sizeof(T));
+		return static_cast<T*>(Xalloc(size));
+	}
+
+	void deallocate(T* ptr, size_t count)
+	{
+		Xrelease(ptr);
+	}
 };
