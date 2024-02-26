@@ -1,8 +1,15 @@
 #pragma once
 
+enum 
+{
+	SLIST_ALIGNMENT = 16
+};
+
+
 // [32][64][][][] 크기별 메모리풀
 
-struct MemoryHeader
+DECLSPEC_ALIGN(SLIST_ALIGNMENT)
+struct MemoryHeader :public SLIST_ENTRY
 {
 	// [MemoryHeader][Data]
 
@@ -23,7 +30,7 @@ struct MemoryHeader
 	int32 allocSize;
 };
 
-
+DECLSPEC_ALIGN(SLIST_ALIGNMENT)
 class MemoryPool
 {
 public:
@@ -34,10 +41,9 @@ public:
 	MemoryHeader*	Pop();
 
 private:
-	int32 _allocSize = 0;
-	Atomic<int32> _allocCount = 0;
+	SLIST_HEADER	_header;
+	int32			_allocSize = 0;
+	Atomic<int32>	_allocCount = 0;
 
-	USE_LOCK;
-	queue<MemoryHeader*> _queue;
 };
 
