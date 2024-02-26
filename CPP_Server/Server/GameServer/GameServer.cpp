@@ -1,41 +1,66 @@
 ﻿#include "pch.h"
 #include "ThreadManager.h"
 #include "Memory.h"
+#include "LockFreeStack.h"
 
-
-class Knight
+DECLSPEC_ALIGN(16)
+class Data
 {
 public:
-	Knight() : _hp(0) { cout << "Knight()" << endl; }
-	Knight(int32 hp) : _hp(hp) { cout << "Knight(int)" << endl; }
-	~Knight() { cout << "~Knight()" << endl; }
+	SListEntry _entry;
 
-
-private:
-	int32 _hp =0;
+	int64 _rand = rand() % 1000;
 };
+
+SListHeader* GHeader;
 
 int main()
 {
+	GHeader = new SListHeader();
+	ASSERT_CRASH((uint64)GHeader % 16 == 0);
+	InitializeHead(GHeader);
 
-	for (int32 i = 0; i < 5; ++i)
+	for (int32 i = 0; i < 3; ++i)
 	{
 		GThreadManager->Launch([]()
 			{
 				while (true)
 				{
-					Vector<Knight> v(10);
-					Map<int32, Knight> m;
-					m[100] = Knight();
+					Data* data = new Data;
+					ASSERT_CRASH((uint64)data % 16 == 0);
 
+					PushEntrySList(GHeader, (SListEntry*)data);
 					this_thread::sleep_for(10ms);
 				}
+
+
 			});
 	}
 
-	//메모리 풀링
-	// 메모리 파편화 방지
-	// 할당 해제 반복횟수 줄임
+	for (int32 i = 0; i < 3; ++i)
+	{
+		GThreadManager->Launch([]()
+			{
+				while (true)
+				{
+					Data* pop = nullptr;
+					pop = (Data*)PopEntrySList(GHeader);
+
+
+					if (pop)
+					{
+						cout << pop->_rand << endl;
+						delete pop;
+					}
+					else
+					{
+						cout << "none" << endl;
+					}
+				}
+
+
+			});
+	}
 
 	GThreadManager->Join();
 }
