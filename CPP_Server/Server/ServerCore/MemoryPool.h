@@ -43,7 +43,8 @@ public:
 private:
 	SLIST_HEADER	_header;
 	int32			_allocSize = 0;
-	Atomic<int32>	_allocCount = 0;
+	Atomic<int32>	_useCount = 0;
+	Atomic<int32>	_reserveCount = 0;
 
 };
 

@@ -1,5 +1,5 @@
 #pragma once
-
+#define _STOMP
 #include "Types.h"
 #include "CoreMacro.h"
 #include "CoreTLS.h"
@@ -14,3 +14,4 @@
 using namespace std;
 
 #include "Lock.h"
+#include "ObjectPool.h"
