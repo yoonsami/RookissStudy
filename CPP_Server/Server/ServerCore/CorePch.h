@@ -5,7 +5,7 @@
 #include "CoreTLS.h"
 #include "CoreGlobal.h"
 #include "Container.h"
-
+#include "TypeCast.h"
 #include <memory>
 
 #include <windows.h>
